@@ -31,7 +31,9 @@ module vscale_verilator_top(
                       .htif_pcr_req_data(`HTIF_PCR_WIDTH'b0),
                       .htif_pcr_resp_valid(htif_pcr_resp_valid),
                       .htif_pcr_resp_ready(1'b1),
-                      .htif_pcr_resp_data(htif_pcr_resp_data)
+                      .htif_pcr_resp_data(htif_pcr_resp_data),
+                     //  info: hardset pin: should set this via Vtop in the future
+                      .arbiter_next_core(1'b0)
                       );
 
    integer i = 0;

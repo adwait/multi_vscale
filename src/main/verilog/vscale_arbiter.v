@@ -6,6 +6,7 @@
 module vscale_arbiter(
                        input                                            clk,
                        input                                            reset,
+                    // info: these are from the dmem addresses of cores
                        input [`HASTI_ADDR_WIDTH-1:0]                    core_haddr [0:`NUM_CORES-1],
                        input                                            core_hwrite [0:`NUM_CORES-1],
                        input [`HASTI_SIZE_WIDTH-1:0]                    core_hsize [0:`NUM_CORES-1],
@@ -61,7 +62,8 @@ module vscale_arbiter(
 
     genvar i;
     generate
-       for (i = 0; i < `NUM_CORES ; i++)
+        // convert to i=i+1 to resolve verilator warning
+       for (i = 0; i < `NUM_CORES; i=i+1)
             always @(*) begin
                 if (cur_core == i) begin
                     //dmem_hready is not looked at by WB anymore, so we can have it be

@@ -55,12 +55,18 @@ vscale_alu.v \
 vscale_mul_div.v \
 vscale_csr_file.v \
 vscale_PC_mux.v \
+vscale_arbiter.v \
 )
 
-SIM_SRCS = $(addprefix $(V_TEST_DIR)/, \
+SIM_SRCS = $(addprefix $(V_SRC_DIR)/, \
 vscale_sim_top.v \
 vscale_dp_hasti_sram.v \
 )
+
+# $(addprefix $(V_TEST_DIR)/, \
+# vscale_sim_top.v \
+# vscale_dp_hasti_sram.v \
+# )
 
 VCS_TOP = $(V_TEST_DIR)/vscale_hex_tb.v
 
@@ -75,6 +81,7 @@ vscale_alu_ops.vh \
 vscale_md_constants.vh \
 vscale_hasti_constants.vh \
 vscale_csr_addr_map.vh \
+vscale_multicore_constants.vh \
 )
 
 TEST_VPD_FILES = $(addprefix $(OUT_DIR)/,$(addsuffix .vpd,$(RV32_TESTS)))

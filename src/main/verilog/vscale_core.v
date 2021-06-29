@@ -80,6 +80,7 @@ module vscale_core(
                                    .core_mem_en(1'b1),
                                    .core_mem_wen(1'b0),
                                    .core_mem_size(`HASTI_SIZE_WORD),
+                                // info: just relays the signal to haddr oport
                                    .core_mem_addr(imem_addr),
                                    .core_mem_wdata_delayed(32'b0),
                                    .core_mem_rdata(imem_rdata),
@@ -136,6 +137,13 @@ module vscale_core(
                             .htif_pcr_resp_ready(htif_pcr_resp_ready),
                             .htif_pcr_resp_data(htif_pcr_resp_data)
                             );
+
+// debugprinting
+always @(posedge clk) begin
+    if (!htif_reset) begin
+        $display("[core %d] imem_haddr: %x imem_addr: %x", core_id, imem_haddr, imem_addr);
+    end
+end
 
 endmodule // vscale_core
 

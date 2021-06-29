@@ -137,7 +137,8 @@ module vscale_pipeline(
    wire [`XPR_LEN-1:0]                          handler_PC;
    wire                                         eret;
    wire [`XPR_LEN-1:0]                          epc;
-   reg                                          halted;
+   // convert reg to wire to resolve verilator error
+   wire                                          halted;
 
    vscale_ctrl ctrl(
                     .clk(clk),
