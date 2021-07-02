@@ -4,7 +4,11 @@
 #include "verilated.h"
 #include "verilated_vcd_c.h"
 
+#include <time.h>
+#include <stdlib.h>
+
 #define VCD_PATH_LENGTH 256
+#define NUM_CYCLES 40
 
 int main(int argc, char **argv, char **env) {
   
@@ -38,6 +42,12 @@ int main(int argc, char **argv, char **env) {
     }
   }
 
+  srand(time(NULL));
+  bool arbiter_token[NUM_CYCLES];
+  for (int i = 0; i < NUM_CYCLES; i++) {
+    arbiter_token[i] = (rand()%2 == 1);
+  }
+
   Verilated::commandArgs(argc, argv);
   Verilated::traceEverOn(true);
   VerilatedVcdC* tfp = new VerilatedVcdC;
@@ -47,8 +57,10 @@ int main(int argc, char **argv, char **env) {
   vluint64_t main_time = 0;
   while (!Verilated::gotFinish()) {
     verilator_top->reset = (main_time < 1000) ? 1 : 0;
-    if (main_time % 100 == 0)
+    if (main_time % 100 == 0){
+      verilator_top->arbiter_token = arbiter_token[main_time/1000];    
       verilator_top->clk = 0;
+    }
     if (main_time % 100 == 50)
       verilator_top->clk = 1;
     verilator_top->eval();

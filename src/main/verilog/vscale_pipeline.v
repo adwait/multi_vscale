@@ -233,6 +233,9 @@ module vscale_pipeline(
                 inst_DX <= `RV_NOP;
             end else begin
                 PC_DX <= PC_IF;
+            `ifndef NOTRACE    
+                $display("[event@core:%d], %x, IF", core_id, PC_IF);
+            `endif
                 inst_DX <= imem_rdata;
             end
          end
@@ -307,12 +310,27 @@ module vscale_pipeline(
    always @(posedge clk) begin
       if (reset | (stall_DX & ~stall_WB)) begin
 `ifndef SYNTHESIS
+    `ifndef NOTRACE
+          if (PC_WB != `XPR_LEN'b0 && PC_WB != `XPR_LEN'd120) begin
+            $display("[event@core:%d], %x, WB", core_id, PC_WB);   
+          end
+    `endif
          PC_WB <= `XPR_LEN'b0;
          store_data_WB <= `XPR_LEN'b0;
          alu_out_WB <= `XPR_LEN'b0;
 `endif
       end else if (~stall_WB) begin
+    `ifndef NOTRACE
+          if (PC_WB != `XPR_LEN'b0 && PC_WB != `XPR_LEN'd120) begin
+            $display("[event@core:%d], %x, WB", core_id, PC_WB);   
+          end
+    `endif
          PC_WB <= PC_DX;
+    `ifndef NOTRACE
+          if (PC_DX != `XPR_LEN'd120) begin
+            $display("[event@core:%d], %x, DX", core_id, PC_DX);
+          end
+    `endif
          store_data_WB <= rs2_data_bypassed;
          alu_out_WB <= alu_out;
          csr_rdata_WB <= csr_rdata;

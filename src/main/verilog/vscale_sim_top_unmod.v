@@ -1,6 +1,7 @@
 `include "vscale_ctrl_constants.vh"
 `include "vscale_csr_addr_map.vh"
 `include "vscale_hasti_constants.vh"
+`include "vscale_multicore_constants.vh"
 
 module vscale_sim_top(
                       input                        clk,
@@ -13,6 +14,7 @@ module vscale_sim_top(
                       output                       htif_pcr_resp_valid,
                       input                        htif_pcr_resp_ready,
                       output [`HTIF_PCR_WIDTH-1:0] htif_pcr_resp_data,
+                      // input
                       input [`CORE_IDX_WIDTH-1:0]  arbiter_next_core
                       );
 
@@ -71,7 +73,7 @@ module vscale_sim_top(
 
    genvar i;
    generate
-   for (i = 0; i < `NUM_CORES ; i++) begin : core_gen_block
+   for (i = 0; i < `NUM_CORES ; i = i + 1) begin : core_gen_block
        vscale_core vscale(
                           .clk(clk),
                           .core_id(i),

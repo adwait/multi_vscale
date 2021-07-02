@@ -66,6 +66,7 @@ module vscale_dp_hasti_sram(
          if (p0_state == s_w2) begin
             if (p0_wvalid) begin
                mem[p0_word_waddr] <= (mem[p0_word_waddr] & ~p0_wmask) | (p0_hwdata & p0_wmask);
+               $display("update mem[%x] with value %x", p0_word_waddr, (mem[p0_word_waddr] & ~p0_wmask) | (p0_hwdata & p0_wmask));
             end
             p0_state <= s_w1;
             p0_wvalid <= 1'b0;
@@ -129,6 +130,16 @@ module vscale_dp_hasti_sram(
               end
            end
    endgenerate
+
+   integer a;
+
+    // always @(posedge hclk) begin
+    //   $display("Memory contents:");
+    //   for (a = 0; a < nwords; a = a + 1) begin
+    //     $display("[mem %x] %x\t", a, mem[a]);
+    //   end
+    //   $display("\n"); 
+    // end
 
 endmodule // vscale_dp_hasti_sram
 

@@ -139,11 +139,11 @@ module vscale_core(
                             );
 
 // debugprinting
-always @(posedge clk) begin
-    if (!htif_reset) begin
-        $display("[core %d] imem_haddr: %x imem_addr: %x", core_id, imem_haddr, imem_addr);
-    end
-end
+// always @(posedge clk) begin
+//     if (!htif_reset) begin
+//         $display("[core %d] imem_haddr: %x imem_addr: %x imem_data: %x", core_id, imem_haddr, imem_addr, imem_hrdata);
+//     end
+// end
 
 endmodule // vscale_core
 
