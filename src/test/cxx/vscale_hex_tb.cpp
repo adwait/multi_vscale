@@ -4,11 +4,12 @@
 #include "verilated.h"
 #include "verilated_vcd_c.h"
 
+#include <iostream>
 #include <time.h>
 #include <stdlib.h>
 
 #define VCD_PATH_LENGTH 256
-#define NUM_CYCLES 40
+#define NUM_CYCLES 100
 
 int main(int argc, char **argv, char **env) {
   
@@ -44,9 +45,17 @@ int main(int argc, char **argv, char **env) {
 
   srand(time(NULL));
   bool arbiter_token[NUM_CYCLES];
+  int randval;
+  int cycle_count = 0;
   for (int i = 0; i < NUM_CYCLES; i++) {
-    arbiter_token[i] = (rand()%2 == 1);
+    randval = rand()%2;
+    if (randval == 0)
+      arbiter_token[i] = false;  
+    else
+      arbiter_token[i] = true;
   }
+
+  // std::cout << "here: " << arbiter_token[30] << std::endl;
 
   Verilated::commandArgs(argc, argv);
   Verilated::traceEverOn(true);
@@ -58,7 +67,11 @@ int main(int argc, char **argv, char **env) {
   while (!Verilated::gotFinish()) {
     verilator_top->reset = (main_time < 1000) ? 1 : 0;
     if (main_time % 100 == 0){
-      verilator_top->arbiter_token = arbiter_token[main_time/1000];    
+      cycle_count = main_time/100;
+      if (cycle_count < NUM_CYCLES)
+        verilator_top->arbiter_token = arbiter_token[cycle_count];
+      else
+        verilator_top->arbiter_token = arbiter_token[NUM_CYCLES-1];
       verilator_top->clk = 0;
     }
     if (main_time % 100 == 50)
