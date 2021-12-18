@@ -4,32 +4,32 @@
 `include "vscale_multicore_constants.vh"
 
 module vscale_arbiter(
-                input                                            clk,
-                input                                            reset,
-                // info: these are from the dmem addresses of cores
-                input [`HASTI_ADDR_WIDTH-1:0]                    core_haddr [0:`NUM_CORES-1],
-                input                                            core_hwrite [0:`NUM_CORES-1],
-                input [`HASTI_SIZE_WIDTH-1:0]                    core_hsize [0:`NUM_CORES-1],
-                input [`HASTI_BURST_WIDTH-1:0]                   core_hburst [0:`NUM_CORES-1],
-                input                                            core_hmastlock [0:`NUM_CORES-1],
-                input [`HASTI_PROT_WIDTH-1:0]                    core_hprot [0:`NUM_CORES-1],
-                input [`HASTI_TRANS_WIDTH-1:0]                   core_htrans [0:`NUM_CORES-1],
-                input [`HASTI_BUS_WIDTH-1:0]                     core_hwdata [0:`NUM_CORES-1],
-                output reg [`HASTI_BUS_WIDTH-1:0]                core_hrdata [0:`NUM_CORES-1],
-                output reg                                       core_hready [0:`NUM_CORES-1],
-                output reg [`HASTI_RESP_WIDTH-1:0]               core_hresp [0:`NUM_CORES-1],
-                output reg [`HASTI_ADDR_WIDTH-1:0]               dmem_haddr,
-                output reg                                       dmem_hwrite,
-                output reg [`HASTI_SIZE_WIDTH-1:0]               dmem_hsize,
-                output reg [`HASTI_BURST_WIDTH-1:0]              dmem_hburst,
-                output reg                                       dmem_hmastlock,
-                output reg [`HASTI_PROT_WIDTH-1:0]               dmem_hprot,
-                output reg [`HASTI_TRANS_WIDTH-1:0]              dmem_htrans,
-                output reg [`HASTI_BUS_WIDTH-1:0]                dmem_hwdata,
-                input [`HASTI_BUS_WIDTH-1:0]                     dmem_hrdata,
-                input                                            dmem_hready,
-                input [`HASTI_RESP_WIDTH-1:0]                    dmem_hresp,
-                input [`CORE_IDX_WIDTH-1:0]                      next_core
+        input                                            clk,
+        input                                            reset,
+        // info: these are from the dmem addresses of cores
+        input [`HASTI_ADDR_WIDTH-1:0]                    core_haddr [0:`NUM_CORES-1],
+        input                                            core_hwrite [0:`NUM_CORES-1],
+        input [`HASTI_SIZE_WIDTH-1:0]                    core_hsize [0:`NUM_CORES-1],
+        input [`HASTI_BURST_WIDTH-1:0]                   core_hburst [0:`NUM_CORES-1],
+        input                                            core_hmastlock [0:`NUM_CORES-1],
+        input [`HASTI_PROT_WIDTH-1:0]                    core_hprot [0:`NUM_CORES-1],
+        input [`HASTI_TRANS_WIDTH-1:0]                   core_htrans [0:`NUM_CORES-1],
+        input [`HASTI_BUS_WIDTH-1:0]                     core_hwdata [0:`NUM_CORES-1],
+        output reg [`HASTI_BUS_WIDTH-1:0]                core_hrdata [0:`NUM_CORES-1],
+        output reg                                       core_hready [0:`NUM_CORES-1],
+        output reg [`HASTI_RESP_WIDTH-1:0]               core_hresp [0:`NUM_CORES-1],
+        output reg [`HASTI_ADDR_WIDTH-1:0]               dmem_haddr,
+        output reg                                       dmem_hwrite,
+        output reg [`HASTI_SIZE_WIDTH-1:0]               dmem_hsize,
+        output reg [`HASTI_BURST_WIDTH-1:0]              dmem_hburst,
+        output reg                                       dmem_hmastlock,
+        output reg [`HASTI_PROT_WIDTH-1:0]               dmem_hprot,
+        output reg [`HASTI_TRANS_WIDTH-1:0]              dmem_htrans,
+        output reg [`HASTI_BUS_WIDTH-1:0]                dmem_hwdata,
+        input [`HASTI_BUS_WIDTH-1:0]                     dmem_hrdata,
+        input                                            dmem_hready,
+        input [`HASTI_RESP_WIDTH-1:0]                    dmem_hresp,
+        input [`CORE_IDX_WIDTH-1:0]                      next_core
     );
 
     //Which core's filing a request this cycle?
@@ -49,21 +49,21 @@ module vscale_arbiter(
 
     //And the combinational connections...
     always @(*) begin
-       dmem_haddr = core_haddr[cur_core];
-       dmem_hwrite = core_hwrite[cur_core];
-       dmem_hsize = core_hsize[cur_core];
-       dmem_hburst = core_hburst[cur_core];
-       dmem_hmastlock = core_hmastlock[cur_core];
-       dmem_hprot = core_hprot[cur_core];
-       dmem_htrans = core_htrans[cur_core];
-       //Write data must be from the previous core.
-       dmem_hwdata = core_hwdata[prev_core];
+        dmem_haddr = core_haddr[cur_core];
+        dmem_hwrite = core_hwrite[cur_core];
+        dmem_hsize = core_hsize[cur_core];
+        dmem_hburst = core_hburst[cur_core];
+        dmem_hmastlock = core_hmastlock[cur_core];
+        dmem_hprot = core_hprot[cur_core];
+        dmem_htrans = core_htrans[cur_core];
+        //Write data must be from the previous core.
+        dmem_hwdata = core_hwdata[prev_core];
     end
 
     genvar i;
     generate
         // convert to i=i+1 to resolve verilator warning
-       for (i = 0; i < `NUM_CORES; i=i+1)
+        for (i = 0; i < `NUM_CORES; i=i+1)
             always @(*) begin
                 if (cur_core == i) begin
                     //dmem_hready is not looked at by WB anymore, so we can have it be
@@ -81,7 +81,7 @@ module vscale_arbiter(
                         core_hready[i] = 1'b0;
                         core_hrdata[i] = dmem_hrdata;
                         core_hresp[i] = dmem_hresp;
-               end
-           end
-       endgenerate
+                end
+            end
+    endgenerate
 endmodule
