@@ -7,17 +7,18 @@ module vscale_arbiter(
         input                                            clk,
         input                                            reset,
         // info: these are from the dmem addresses of cores
-        input [`HASTI_ADDR_WIDTH-1:0]                    core_haddr [0:`NUM_CORES-1],
-        input                                            core_hwrite [0:`NUM_CORES-1],
-        input [`HASTI_SIZE_WIDTH-1:0]                    core_hsize [0:`NUM_CORES-1],
-        input [`HASTI_BURST_WIDTH-1:0]                   core_hburst [0:`NUM_CORES-1],
-        input                                            core_hmastlock [0:`NUM_CORES-1],
-        input [`HASTI_PROT_WIDTH-1:0]                    core_hprot [0:`NUM_CORES-1],
-        input [`HASTI_TRANS_WIDTH-1:0]                   core_htrans [0:`NUM_CORES-1],
-        input [`HASTI_BUS_WIDTH-1:0]                     core_hwdata [0:`NUM_CORES-1],
-        output reg [`HASTI_BUS_WIDTH-1:0]                core_hrdata [0:`NUM_CORES-1],
-        output reg                                       core_hready [0:`NUM_CORES-1],
-        output reg [`HASTI_RESP_WIDTH-1:0]               core_hresp [0:`NUM_CORES-1],
+        input [`NUM_CORES*`HASTI_ADDR_WIDTH-1:0]         core_haddr,
+        input [`NUM_CORES-1:0]                           core_hwrite,
+        input [`NUM_CORES*`HASTI_SIZE_WIDTH-1:0]         core_hsize,
+        input [`NUM_CORES*`HASTI_BURST_WIDTH-1:0]                   core_hburst,
+        input [`NUM_CORES-1:0]                           core_hmastlock,
+        input [`NUM_CORES*`HASTI_PROT_WIDTH-1:0]                    core_hprot,
+        input [`NUM_CORES*`HASTI_TRANS_WIDTH-1:0]                   core_htrans,
+        input [`NUM_CORES*`HASTI_BUS_WIDTH-1:0]                     core_hwdata,
+        // INFO: these are now wires, take care!
+        output [`NUM_CORES*`HASTI_BUS_WIDTH-1:0]                core_hrdata,
+        output [`NUM_CORES-1:0]                           core_hready,
+        output [`NUM_CORES*`HASTI_RESP_WIDTH-1:0]               core_hresp,
         output reg [`HASTI_ADDR_WIDTH-1:0]               dmem_haddr,
         output reg                                       dmem_hwrite,
         output reg [`HASTI_SIZE_WIDTH-1:0]               dmem_hsize,
@@ -47,17 +48,51 @@ module vscale_arbiter(
         prev_core <= cur_core;
     end
 
+    // inputs
+    wire [`HASTI_ADDR_WIDTH-1:0]    local_core_haddr [`NUM_CORES-1:0];
+    wire                            local_core_hwrite [`NUM_CORES-1:0];
+    wire [`HASTI_SIZE_WIDTH-1:0]    local_core_hsize [`NUM_CORES-1:0];
+    wire [`HASTI_BURST_WIDTH-1:0]   local_core_hburst [`NUM_CORES-1:0];
+    wire                            local_core_hmastlock [`NUM_CORES-1:0];
+    wire [`HASTI_PROT_WIDTH-1:0]    local_core_hprot [`NUM_CORES-1:0];
+    wire [`HASTI_TRANS_WIDTH-1:0]   local_core_htrans [`NUM_CORES-1:0];
+    wire [`HASTI_BUS_WIDTH-1:0]     local_core_hwdata [`NUM_CORES-1:0];
+    // INFO: outputs, these are now regs, take care
+    reg [`HASTI_BUS_WIDTH-1:0]     local_core_hrdata [`NUM_CORES-1:0];
+    reg                            local_core_hready [`NUM_CORES-1:0];
+    reg [`HASTI_RESP_WIDTH-1:0]    local_core_hresp [`NUM_CORES-1:0];
+    
+    
+    genvar i_flat;
+    // for (i_flat = 0;i_flat<32;i_flat=i_flat+1) 
+    //     assign local_2D_array[i_flat] = input[32*i_flat+31:32*i_flat];
+    for (i_flat = 0; i_flat < `NUM_CORES; i_flat=i_flat+1) begin
+        assign local_core_haddr[i_flat]      = core_haddr[`HASTI_ADDR_WIDTH*i_flat+`HASTI_ADDR_WIDTH-1:`HASTI_ADDR_WIDTH*i_flat];
+        assign local_core_hwrite[i_flat]     = core_hwrite[i_flat:i_flat];
+        assign local_core_hsize[i_flat]      = core_hsize[`HASTI_SIZE_WIDTH*i_flat+`HASTI_SIZE_WIDTH-1:`HASTI_SIZE_WIDTH*i_flat];
+        assign local_core_hburst[i_flat]     = core_hburst[`HASTI_BURST_WIDTH*i_flat+`HASTI_BURST_WIDTH-1:`HASTI_BURST_WIDTH*i_flat];
+        assign local_core_hmastlock[i_flat]  = core_hmastlock[i_flat:i_flat];
+        assign local_core_hprot[i_flat]      = core_hprot[`HASTI_PROT_WIDTH*i_flat+`HASTI_PROT_WIDTH-1:`HASTI_PROT_WIDTH*i_flat];
+        assign local_core_htrans[i_flat]     = core_htrans[`HASTI_TRANS_WIDTH*i_flat+`HASTI_TRANS_WIDTH-1:`HASTI_TRANS_WIDTH*i_flat];
+        assign local_core_hwdata[i_flat]     = core_hwdata[`HASTI_BUS_WIDTH*i_flat+`HASTI_BUS_WIDTH-1:`HASTI_BUS_WIDTH*i_flat];
+
+        assign core_hrdata[`HASTI_BUS_WIDTH*i_flat+`HASTI_BUS_WIDTH-1:`HASTI_BUS_WIDTH*i_flat] = local_core_hrdata[i_flat];
+        assign core_hready[i_flat:i_flat] = local_core_hready[i_flat];
+        assign core_hresp[`HASTI_RESP_WIDTH*i_flat+`HASTI_RESP_WIDTH-1:`HASTI_RESP_WIDTH*i_flat] = local_core_hresp[i_flat];
+        // local_2D_array[i_flat] = input[32*i_flat+31:32*i_flat];
+    end
+
     //And the combinational connections...
     always @(*) begin
-        dmem_haddr = core_haddr[cur_core];
-        dmem_hwrite = core_hwrite[cur_core];
-        dmem_hsize = core_hsize[cur_core];
-        dmem_hburst = core_hburst[cur_core];
-        dmem_hmastlock = core_hmastlock[cur_core];
-        dmem_hprot = core_hprot[cur_core];
-        dmem_htrans = core_htrans[cur_core];
+        dmem_haddr = local_core_haddr[cur_core];
+        dmem_hwrite = local_core_hwrite[cur_core];
+        dmem_hsize = local_core_hsize[cur_core];
+        dmem_hburst = local_core_hburst[cur_core];
+        dmem_hmastlock = local_core_hmastlock[cur_core];
+        dmem_hprot = local_core_hprot[cur_core];
+        dmem_htrans = local_core_htrans[cur_core];
         //Write data must be from the previous core.
-        dmem_hwdata = core_hwdata[prev_core];
+        dmem_hwdata = local_core_hwdata[prev_core];
     end
 
     genvar i;
@@ -70,17 +105,17 @@ module vscale_arbiter(
                     //negative in WB and no one minds...it's only the data that has to
                     //follow one cycle behind :). Thus, the actual mem's hready is sent to
                     //the current core.
-                    core_hready[i] = dmem_hready;
-                    core_hrdata[i] = dmem_hrdata;
+                    local_core_hready[i] = dmem_hready;
+                    local_core_hrdata[i] = dmem_hrdata;
                     //Resp is always HASTI_RESP_OKAY on the dmem side, so if we make
                     //all other cores get that, we should be fine.
                     //Furthermore, I believe resp only matters if it's equal to
                     //HASTI_RESP_ERROR (see the bridge for details).
-                    core_hresp[i] = `HASTI_RESP_OKAY;
+                    local_core_hresp[i] = `HASTI_RESP_OKAY;
                 end else begin
-                        core_hready[i] = 1'b0;
-                        core_hrdata[i] = dmem_hrdata;
-                        core_hresp[i] = dmem_hresp;
+                        local_core_hready[i] = 1'b0;
+                        local_core_hrdata[i] = dmem_hrdata;
+                        local_core_hresp[i] = dmem_hresp;
                 end
             end
     endgenerate

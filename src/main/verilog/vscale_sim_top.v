@@ -21,6 +21,8 @@ module vscale_sim_top(
 
 	wire                                            resetn;
 
+
+	// Signals between instruction memory and arbiter
 	wire [`HASTI_ADDR_WIDTH-1:0]                    imem_haddr [0:`NUM_CORES-1];
 	wire                                            imem_hwrite [0:`NUM_CORES-1];
 	wire [`HASTI_SIZE_WIDTH-1:0]                    imem_hsize [0:`NUM_CORES-1];
@@ -46,7 +48,68 @@ module vscale_sim_top(
 	wire                                            dmem_hready [0:`NUM_CORES-1];
 	wire [`HASTI_RESP_WIDTH-1:0]                    dmem_hresp [0:`NUM_CORES-1];
 
-	//Signals between arbiter and memory
+
+	// ************* Flattened ports for arbiter
+	// Signals between instruction memory and cores
+	wire [`NUM_CORES*`HASTI_ADDR_WIDTH-1:0]                    port_imem_haddr;
+	wire [`NUM_CORES-1:0]                                           port_imem_hwrite;
+	wire [`NUM_CORES*`HASTI_SIZE_WIDTH-1:0]                    port_imem_hsize;
+	wire [`NUM_CORES*`HASTI_BURST_WIDTH-1:0]                   port_imem_hburst;
+	wire [`NUM_CORES-1:0]                                           port_imem_hmastlock;
+	wire [`NUM_CORES*`HASTI_PROT_WIDTH-1:0]                    port_imem_hprot;
+	wire [`NUM_CORES*`HASTI_TRANS_WIDTH-1:0]                   port_imem_htrans;
+	wire [`NUM_CORES*`HASTI_BUS_WIDTH-1:0]                     port_imem_hwdata;
+	wire [`NUM_CORES*`HASTI_BUS_WIDTH-1:0]                     port_imem_hrdata;
+	wire [`NUM_CORES-1:0]                                           port_imem_hready;
+	wire [`NUM_CORES*`HASTI_RESP_WIDTH-1:0]                    port_imem_hresp;
+
+	//Signals between cores and arbiter
+	wire [`NUM_CORES*`HASTI_ADDR_WIDTH-1:0]                    port_dmem_haddr;
+	wire [`NUM_CORES-1:0]                                           port_dmem_hwrite;
+	wire [`NUM_CORES*`HASTI_SIZE_WIDTH-1:0]                    port_dmem_hsize;
+	wire [`NUM_CORES*`HASTI_BURST_WIDTH-1:0]                   port_dmem_hburst;
+	wire [`NUM_CORES-1:0]                                           port_dmem_hmastlock;
+	wire [`NUM_CORES*`HASTI_PROT_WIDTH-1:0]                    port_dmem_hprot;
+	wire [`NUM_CORES*`HASTI_TRANS_WIDTH-1:0]                   port_dmem_htrans;
+	wire [`NUM_CORES*`HASTI_BUS_WIDTH-1:0]                     port_dmem_hwdata;
+	wire [`NUM_CORES*`HASTI_BUS_WIDTH-1:0]                     port_dmem_hrdata;
+	wire [`NUM_CORES-1:0]                                           port_dmem_hready;
+	wire [`NUM_CORES*`HASTI_RESP_WIDTH-1:0]                    port_dmem_hresp;
+
+	genvar i_flat;
+    for (i_flat = 0; i_flat < `NUM_CORES; i_flat=i_flat+1) begin
+		assign port_imem_haddr[`HASTI_ADDR_WIDTH*i_flat+`HASTI_ADDR_WIDTH-1:`HASTI_ADDR_WIDTH*i_flat] = imem_haddr[i_flat];
+        assign port_imem_hwrite[i_flat:i_flat] = imem_hwrite[i_flat];
+        assign port_imem_hsize[`HASTI_SIZE_WIDTH*i_flat+`HASTI_SIZE_WIDTH-1:`HASTI_SIZE_WIDTH*i_flat] = imem_hsize[i_flat];
+        assign port_imem_hburst[`HASTI_BURST_WIDTH*i_flat+`HASTI_BURST_WIDTH-1:`HASTI_BURST_WIDTH*i_flat] = imem_hburst[i_flat];
+        assign port_imem_hmastlock[i_flat:i_flat] = imem_hmastlock[i_flat];
+        assign port_imem_hprot[`HASTI_PROT_WIDTH*i_flat+`HASTI_PROT_WIDTH-1:`HASTI_PROT_WIDTH*i_flat] = imem_hprot[i_flat];
+        assign port_imem_htrans[`HASTI_TRANS_WIDTH*i_flat+`HASTI_TRANS_WIDTH-1:`HASTI_TRANS_WIDTH*i_flat] = imem_htrans[i_flat];
+        assign port_imem_hwdata[`HASTI_BUS_WIDTH*i_flat+`HASTI_BUS_WIDTH-1:`HASTI_BUS_WIDTH*i_flat] = imem_hwdata[i_flat];
+
+        assign imem_hrdata[i_flat] = port_imem_hrdata[`HASTI_BUS_WIDTH*i_flat+`HASTI_BUS_WIDTH-1:`HASTI_BUS_WIDTH*i_flat];
+        assign imem_hready[i_flat] = port_imem_hready[i_flat:i_flat];
+        assign imem_hresp[i_flat] = port_imem_hresp[`HASTI_RESP_WIDTH*i_flat+`HASTI_RESP_WIDTH-1:`HASTI_RESP_WIDTH*i_flat];
+
+
+        assign port_dmem_haddr[`HASTI_ADDR_WIDTH*i_flat+`HASTI_ADDR_WIDTH-1:`HASTI_ADDR_WIDTH*i_flat] = dmem_haddr[i_flat];
+        assign port_dmem_hwrite[i_flat:i_flat] = dmem_hwrite[i_flat];
+        assign port_dmem_hsize[`HASTI_SIZE_WIDTH*i_flat+`HASTI_SIZE_WIDTH-1:`HASTI_SIZE_WIDTH*i_flat] = dmem_hsize[i_flat];
+        assign port_dmem_hburst[`HASTI_BURST_WIDTH*i_flat+`HASTI_BURST_WIDTH-1:`HASTI_BURST_WIDTH*i_flat] = dmem_hburst[i_flat];
+        assign port_dmem_hmastlock[i_flat:i_flat] = dmem_hmastlock[i_flat];
+        assign port_dmem_hprot[`HASTI_PROT_WIDTH*i_flat+`HASTI_PROT_WIDTH-1:`HASTI_PROT_WIDTH*i_flat] = dmem_hprot[i_flat];
+        assign port_dmem_htrans[`HASTI_TRANS_WIDTH*i_flat+`HASTI_TRANS_WIDTH-1:`HASTI_TRANS_WIDTH*i_flat] = dmem_htrans[i_flat];
+        assign port_dmem_hwdata[`HASTI_BUS_WIDTH*i_flat+`HASTI_BUS_WIDTH-1:`HASTI_BUS_WIDTH*i_flat] = dmem_hwdata[i_flat];
+
+        assign dmem_hrdata[i_flat] = port_dmem_hrdata[`HASTI_BUS_WIDTH*i_flat+`HASTI_BUS_WIDTH-1:`HASTI_BUS_WIDTH*i_flat];
+        assign dmem_hready[i_flat] = port_dmem_hready[i_flat:i_flat];
+        assign dmem_hresp[i_flat] = port_dmem_hresp[`HASTI_RESP_WIDTH*i_flat+`HASTI_RESP_WIDTH-1:`HASTI_RESP_WIDTH*i_flat];
+    end
+
+	// ************* Flattened Ports
+
+
+	//Signals between arbiter and data memory
 	wire [`HASTI_ADDR_WIDTH-1:0]                    arbiter_dmem_haddr;
 	wire                                            arbiter_dmem_hwrite;
 	wire [`HASTI_SIZE_WIDTH-1:0]                    arbiter_dmem_hsize;
@@ -124,17 +187,17 @@ module vscale_sim_top(
    	vscale_arbiter arbiter(
 		.clk(clk),
 		.reset(reset),
-		.core_haddr(dmem_haddr),
-		.core_hwrite(dmem_hwrite),
-		.core_hsize(dmem_hsize),
-		.core_hburst(dmem_hburst),
-		.core_hmastlock(dmem_hmastlock),
-		.core_hprot(dmem_hprot),
-		.core_htrans(dmem_htrans),
-		.core_hwdata(dmem_hwdata),
-		.core_hrdata(dmem_hrdata),
-		.core_hready(dmem_hready),
-		.core_hresp(dmem_hresp),
+		.core_haddr(port_dmem_haddr),
+		.core_hwrite(port_dmem_hwrite),
+		.core_hsize(port_dmem_hsize),
+		.core_hburst(port_dmem_hburst),
+		.core_hmastlock(port_dmem_hmastlock),
+		.core_hprot(port_dmem_hprot),
+		.core_htrans(port_dmem_htrans),
+		.core_hwdata(port_dmem_hwdata),
+		.core_hrdata(port_dmem_hrdata),
+		.core_hready(port_dmem_hready),
+		.core_hresp(port_dmem_hresp),
 		.dmem_haddr(arbiter_dmem_haddr),
 		.dmem_hwrite(arbiter_dmem_hwrite),
 		.dmem_hsize(arbiter_dmem_hsize),
@@ -152,17 +215,17 @@ module vscale_sim_top(
    	vscale_dp_hasti_sram hasti_mem(
 		.hclk(clk),
 		.hresetn(resetn),
-		.p1_haddr(imem_haddr),
-		.p1_hwrite(imem_hwrite),
-		.p1_hsize(imem_hsize),
-		.p1_hburst(imem_hburst),
-		.p1_hmastlock(imem_hmastlock),
-		.p1_hprot(imem_hprot),
-		.p1_htrans(imem_htrans),
-		.p1_hwdata(imem_hwdata),
-		.p1_hrdata(imem_hrdata),
-		.p1_hready(imem_hready),
-		.p1_hresp(imem_hresp),
+		.p1_haddr(port_imem_haddr),
+		.p1_hwrite(port_imem_hwrite),
+		.p1_hsize(port_imem_hsize),
+		.p1_hburst(port_imem_hburst),
+		.p1_hmastlock(port_imem_hmastlock),
+		.p1_hprot(port_imem_hprot),
+		.p1_htrans(port_imem_htrans),
+		.p1_hwdata(port_imem_hwdata),
+		.p1_hrdata(port_imem_hrdata),
+		.p1_hready(port_imem_hready),
+		.p1_hresp(port_imem_hresp),
 		.p0_haddr(arbiter_dmem_haddr),
 		.p0_hwrite(arbiter_dmem_hwrite),
 		.p0_hsize(arbiter_dmem_hsize),

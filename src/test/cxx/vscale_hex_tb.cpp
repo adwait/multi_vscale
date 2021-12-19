@@ -11,6 +11,8 @@
 #define VCD_PATH_LENGTH 256
 #define NUM_CYCLES 100
 
+using namespace std;
+
 int main(int argc, char **argv, char **env) {
   
   int c;
@@ -20,40 +22,40 @@ int main(int argc, char **argv, char **env) {
   strncpy(vcdfile,"tmp.vcd",VCD_PATH_LENGTH);
 
 
-  while (1) {
-    int this_option_optind = optind ? optind : 1;
-    int option_index = 0;
-    static struct option long_options[] = {
-      {"vcdfile", required_argument, 0,  0 },
-      {0,         0,                 0,  0 }
-    };
+    while (1) {
+        int this_option_optind = optind ? optind : 1;
+        int option_index = 0;
+        static struct option long_options[] = {
+            {"vcdfile", required_argument, 0,  0 },
+            {0,         0,                 0,  0 }
+        };
 
-    c = getopt_long(argc, argv, "",
-                    long_options, &option_index);
-    if (c == -1)
-      break;
-    
-    switch (c) {
-    case 0:
-      if (optarg)
-        strncpy(vcdfile,optarg,VCD_PATH_LENGTH);
-      break;
-    default:
-      break;
+        c = getopt_long(argc, argv, "",
+                        long_options, &option_index);
+        if (c == -1) break;
+        
+        switch (c) {
+        case 0:
+        if (optarg)
+            strncpy(vcdfile,optarg,VCD_PATH_LENGTH);
+            break;
+            default:
+            break;
+        }
     }
-  }
 
-  srand(time(NULL));
-  bool arbiter_token[NUM_CYCLES];
-  int randval;
-  int cycle_count = 0;
-  for (int i = 0; i < NUM_CYCLES; i++) {
-    randval = rand()%2;
-    if (randval == 0)
-      arbiter_token[i] = false;  
-    else
-      arbiter_token[i] = true;
-  }
+    srand(time(NULL));
+    bool arbiter_token[NUM_CYCLES];
+    int randval;
+    int cycle_count = 0;
+    for (int i = 0; i < NUM_CYCLES; i++) {
+        randval = rand() % 2;
+        std::cout << randval;
+        if (randval == 0)
+            arbiter_token[i] = false;  
+        else
+            arbiter_token[i] = true;
+    }
 
   // std::cout << "here: " << arbiter_token[30] << std::endl;
 
@@ -66,7 +68,7 @@ int main(int argc, char **argv, char **env) {
   vluint64_t main_time = 0;
   while (!Verilated::gotFinish()) {
     verilator_top->reset = (main_time < 1000) ? 1 : 0;
-    if (main_time % 100 == 0){
+    if (main_time % 100 == 0) {
       cycle_count = main_time/100;
       if (cycle_count < NUM_CYCLES)
         verilator_top->arbiter_token = arbiter_token[cycle_count];

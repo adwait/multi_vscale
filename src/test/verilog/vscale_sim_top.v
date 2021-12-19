@@ -2,6 +2,8 @@
 `include "vscale_csr_addr_map.vh"
 `include "vscale_hasti_constants.vh"
 
+// ! NOT BEING USED
+
 module vscale_sim_top(
         input                        clk,
         input                        reset,
