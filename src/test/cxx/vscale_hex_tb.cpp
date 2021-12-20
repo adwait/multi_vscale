@@ -52,10 +52,11 @@ int main(int argc, char **argv, char **env) {
     tfp->open(vcdfile);
     vluint64_t main_time = 0;
     while (!Verilated::gotFinish()) {
-        verilator_top->reset = (main_time < 1000) ? 1 : 0;
-        if (main_time % 100 == 0)
-            verilator_top->clk = 0;
+        verilator_top->reset = (main_time < 200) ? 1 : 0;
+        // changed this to start at posedge
         if (main_time % 100 == 50)
+            verilator_top->clk = 0;
+        if (main_time % 100 == 0)
             verilator_top->clk = 1;
         verilator_top->eval();
         tfp->dump(main_time);

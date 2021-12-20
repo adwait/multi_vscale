@@ -17,13 +17,13 @@ read_verilog src/main/verilog/vscale_pipeline.v
 read_verilog src/main/verilog/vscale_regfile.v
 read_verilog src/main/verilog/vscale_src_a_mux.v
 read_verilog src/main/verilog/vscale_src_b_mux.v
-read_verilog src/main/verilog/vscale_dp_hasti_sram.v
+read_verilog -nomem2reg src/main/verilog/vscale_dp_hasti_sram.v
 read_verilog src/main/verilog/vscale_sim_top.v
 
 hierarchy -top vscale_sim_top
 hierarchy -check
 
-proc; opt; fsm; opt; memory; opt
+proc; opt; fsm; opt;
 techmap; opt
 clean
 

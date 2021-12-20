@@ -54,9 +54,10 @@ vscale_csr_file.v \
 vscale_PC_mux.v \
 )
 
-SIM_SRCS = $(addprefix $(V_TEST_DIR)/, \
-vscale_sim_top.v \
-vscale_dp_hasti_sram.v \
+# changed from test directory to source directory
+SIM_SRCS = $(addprefix $(V_SRC_DIR)/, \
+	vscale_sim_top.v \
+	vscale_dp_hasti_sram.v \
 )
 
 VCS_TOP = $(V_TEST_DIR)/vscale_hex_tb.v

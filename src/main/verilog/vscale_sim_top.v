@@ -54,6 +54,8 @@ module vscale_sim_top(
    assign resetn = ~reset;
    assign htif_reset = reset;
 
+    wire [32*`HASTI_BUS_WIDTH-1:0]  port_mem;
+
    vscale_core vscale(
                       .clk(clk),
                       .imem_haddr(imem_haddr),
@@ -121,7 +123,10 @@ module vscale_sim_top(
                                   .p0_hwdata(dmem_hwdata),
                                   .p0_hrdata(dmem_hrdata),
                                   .p0_hready(dmem_hready),
-                                  .p0_hresp(dmem_hresp)
+                                  .p0_hresp(dmem_hresp),
+                                  .port_mem(port_mem)
                                   );
+
+    `include "formal.v"
 
 endmodule // vscale_sim_top

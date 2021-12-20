@@ -6,7 +6,7 @@ module vscale_verilator_top(
                             input                        reset
                             );
 
-   localparam hexfile_words = 8192;
+   localparam hexfile_words = 8;
 
    wire htif_pcr_resp_valid;
    wire [`HTIF_PCR_WIDTH-1:0] htif_pcr_resp_data;

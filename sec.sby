@@ -1,0 +1,13 @@
+[options]
+mode bmc
+depth 6
+
+[engines]
+smtbmc z3
+
+[script]
+read -formal vscale_top_sby.v
+prep -top vscale_sim_top
+
+[files]
+vscale_top_sby.v

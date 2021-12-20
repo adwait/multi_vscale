@@ -17214,6 +17214,8 @@ module vscale_sim_top(clk, reset, htif_pcr_req_valid, htif_pcr_req_ready, htif_p
   assign htif_ipi_resp_data = 1'h0;
   assign htif_ipi_resp_valid = 1'h0;
   assign htif_reset = reset;
+
+  `include "formal.v"
 endmodule
 
 module vscale_src_a_mux(src_a_sel, PC_DX, rs1_data, alu_src_a);

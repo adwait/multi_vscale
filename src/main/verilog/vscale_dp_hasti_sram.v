@@ -24,15 +24,19 @@ module vscale_dp_hasti_sram(
                             input [`HASTI_BUS_WIDTH-1:0]   p1_hwdata,
                             output [`HASTI_BUS_WIDTH-1:0]  p1_hrdata,
                             output                         p1_hready,
-                            output                         p1_hresp
+                            output                         p1_hresp,
+                            output [`MEM_WORDS*`HASTI_BUS_WIDTH-1:0]    port_mem
                             );
-
-   parameter nwords = 32;
 
    localparam s_w1 = 0;
    localparam s_w2 = 1;
 
-   reg [`HASTI_BUS_WIDTH-1:0]                              mem [nwords-1:0];
+   reg [`HASTI_BUS_WIDTH-1:0]                               mem [`MEM_WORDS-1:0];
+
+    genvar i_flat;
+    for (i_flat = 0; i_flat < `MEM_WORDS; i_flat=i_flat+1) begin
+        assign port_mem[`HASTI_BUS_WIDTH*i_flat+`HASTI_BUS_WIDTH-1:`HASTI_BUS_WIDTH*i_flat] = mem[i_flat];
+    end
 
    // p0
 
