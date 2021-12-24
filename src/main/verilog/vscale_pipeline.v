@@ -28,7 +28,12 @@ module vscale_pipeline(
         input [`HTIF_PCR_WIDTH-1:0]  htif_pcr_req_data,
         output                       htif_pcr_resp_valid,
         input                        htif_pcr_resp_ready,
-        output [`HTIF_PCR_WIDTH-1:0] htif_pcr_resp_data
+        output [`HTIF_PCR_WIDTH-1:0] htif_pcr_resp_data,
+
+         // outputs for the events
+        output [`XPR_LEN-1:0]   port_PC_IF,
+        output [`XPR_LEN-1:0]   port_PC_DX,
+        output [`XPR_LEN-1:0]   port_PC_WB
     );
 
     function [`XPR_LEN-1:0] store_data;
@@ -139,6 +144,11 @@ module vscale_pipeline(
     wire [`XPR_LEN-1:0]                          epc;
     // convert reg to wire to resolve verilator error
     wire                                          halted;
+
+    // assign to port PCs
+    assign port_PC_IF = PC_IF;
+    assign port_PC_DX = PC_DX;
+    assign port_PC_WB = PC_WB;
 
     vscale_ctrl ctrl(
                     .clk(clk),
