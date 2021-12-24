@@ -22,7 +22,6 @@ read_verilog src/main/verilog/vscale_sim_top.v
 read_verilog src/main/verilog/vscale_src_a_mux.v
 read_verilog src/main/verilog/vscale_src_b_mux.v
 
-
 hierarchy -top vscale_sim_top
 hierarchy -check
 
@@ -30,4 +29,4 @@ proc; opt; fsm; opt; memory; opt
 techmap; opt
 clean
 
-write_verilog -noattr mvscale_top.v
+write_verilog -noattr mvscale_top_c1.v

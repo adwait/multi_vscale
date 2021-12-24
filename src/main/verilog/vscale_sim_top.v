@@ -2,6 +2,7 @@
 `include "vscale_csr_addr_map.vh"
 `include "vscale_hasti_constants.vh"
 `include "vscale_multicore_constants.vh"
+`include "rv32_opcodes.vh"
 
 
 module vscale_sim_top(
@@ -108,6 +109,14 @@ module vscale_sim_top(
 
 	// ************* Flattened Ports
 
+    // ************* Flattened memory for ease of verification
+    wire [`MEM_WORDS*`HASTI_BUS_WIDTH-1:0] port_mem;
+    // *************
+
+    wire [`XPR_LEN-1:0]  ports_PC_IF [`NUM_CORES-1:0];
+    wire [`XPR_LEN-1:0]  ports_PC_DX [`NUM_CORES-1:0];
+    wire [`XPR_LEN-1:0]  ports_PC_WB [`NUM_CORES-1:0];
+
 
 	//Signals between arbiter and data memory
 	wire [`HASTI_ADDR_WIDTH-1:0]                    arbiter_dmem_haddr;
@@ -179,7 +188,10 @@ module vscale_sim_top(
 			.htif_ipi_resp_ready(htif_ipi_resp_ready),
 			.htif_ipi_resp_valid(htif_ipi_resp_valid),
 			.htif_ipi_resp_data(htif_ipi_resp_data),
-			.htif_debug_stats_pcr(htif_debug_stats_pcr)
+			.htif_debug_stats_pcr(htif_debug_stats_pcr),
+            .port_PC_IF(ports_PC_IF[i]),
+            .port_PC_DX(ports_PC_DX[i]),
+            .port_PC_WB(ports_PC_WB[i])
 		);
 	   	end
    	endgenerate
@@ -236,7 +248,8 @@ module vscale_sim_top(
 		.p0_hwdata(arbiter_dmem_hwdata),
 		.p0_hrdata(arbiter_dmem_hrdata),
 		.p0_hready(arbiter_dmem_hready),
-		.p0_hresp(arbiter_dmem_hresp)
+		.p0_hresp(arbiter_dmem_hresp),
+        .port_mem(port_mem)
 	);
 
 endmodule // vscale_sim_top

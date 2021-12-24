@@ -44,7 +44,11 @@ module vscale_core(
         output                          htif_ipi_resp_ready,
         input                           htif_ipi_resp_valid,
         input                           htif_ipi_resp_data,
-        output                          htif_debug_stats_pcr
+        output                          htif_debug_stats_pcr,
+
+        output [`XPR_LEN-1:0]   port_PC_IF,
+        output [`XPR_LEN-1:0]   port_PC_DX,
+        output [`XPR_LEN-1:0]   port_PC_WB
     );
 
     wire                                            imem_wait;
@@ -135,7 +139,10 @@ module vscale_core(
         .htif_pcr_req_data(htif_pcr_req_data),
         .htif_pcr_resp_valid(htif_pcr_resp_valid),
         .htif_pcr_resp_ready(htif_pcr_resp_ready),
-        .htif_pcr_resp_data(htif_pcr_resp_data)
+        .htif_pcr_resp_data(htif_pcr_resp_data),
+        .port_PC_IF(port_PC_IF),
+        .port_PC_DX(port_PC_DX),
+        .port_PC_WB(port_PC_WB)
     );
 
 // debugprinting

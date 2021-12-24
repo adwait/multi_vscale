@@ -51,10 +51,15 @@ int main(int argc, char **argv, char **env) {
     for (int i = 0; i < NUM_CYCLES; i++) {
         randval = rand() % 2;
         std::cout << randval;
-        if (randval == 0)
-            arbiter_token[i] = false;  
-        else
-            arbiter_token[i] = true;
+        if (randval == 0) {
+          arbiter_token[i] = false;  
+        }
+        else {
+          // change this for single core design
+          arbiter_token[i] = false;
+        }
+        
+            
     }
 
   // std::cout << "here: " << arbiter_token[30] << std::endl;
@@ -67,8 +72,8 @@ int main(int argc, char **argv, char **env) {
   tfp->open(vcdfile);
   vluint64_t main_time = 0;
   while (!Verilated::gotFinish()) {
-    verilator_top->reset = (main_time < 1000) ? 1 : 0;
-    if (main_time % 100 == 0) {
+    verilator_top->reset = (main_time < 200) ? 1 : 0;
+    if (main_time % 100 == 50) {
       cycle_count = main_time/100;
       if (cycle_count < NUM_CYCLES)
         verilator_top->arbiter_token = arbiter_token[cycle_count];
@@ -76,8 +81,9 @@ int main(int argc, char **argv, char **env) {
         verilator_top->arbiter_token = arbiter_token[NUM_CYCLES-1];
       verilator_top->clk = 0;
     }
-    if (main_time % 100 == 50)
+    if (main_time % 100 == 0) {
       verilator_top->clk = 1;
+    }
     verilator_top->eval();
     tfp->dump(main_time);
     main_time += 50;
