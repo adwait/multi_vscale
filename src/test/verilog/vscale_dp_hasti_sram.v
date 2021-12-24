@@ -1,5 +1,7 @@
 `include "vscale_hasti_constants.vh"
 
+// ! NOT BEING USED
+
 module vscale_dp_hasti_sram(
                             input                          hclk,
                             input                          hresetn,

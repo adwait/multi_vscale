@@ -1,0 +1,3 @@
+This was a run where the counter was converted to a 3-bit thing and the loop-around was fixed at the 4th instruction. 
+BMC depth of 16 was chosen. 
+Still not able to find the invariant.

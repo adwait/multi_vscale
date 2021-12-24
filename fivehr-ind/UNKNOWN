@@ -1,0 +1,4 @@
+Elapsed clock time [H:MM:SS (secs)]: 5:54:14 (21254)
+Elapsed process time [H:MM:SS (secs)]: 5:57:33 (21453)
+engine_0 (smtbmc boolector) returned pass for basecase
+engine_0 (smtbmc boolector) returned FAIL for induction

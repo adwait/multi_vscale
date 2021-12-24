@@ -1,13 +1,14 @@
 [options]
 mode bmc
-depth 6
+depth 11
 
 [engines]
-smtbmc z3
+smtbmc boolector
 
 [script]
-read -formal vscale_top_sby.v
+read -formal mvscale_top_c1.v
 prep -top vscale_sim_top
 
 [files]
-vscale_top_sby.v
+mvscale_top_c1.v
+formal.v

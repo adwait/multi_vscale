@@ -2,9 +2,10 @@
 `include "vscale_csr_addr_map.vh"
 
 module vscale_verilator_top(
-                            input                        clk,
-                            input                        reset
-                            );
+      input clk,
+      input reset,
+      input arbiter_token                 
+   );
 
    localparam hexfile_words = 8;
 
@@ -22,17 +23,19 @@ module vscale_verilator_top(
    wire                       htif_pcr_req_ready;
    
    vscale_sim_top DUT(
-                      .clk(clk),
-                      .reset(reset),
-                      .htif_pcr_req_valid(1'b1),
-                      .htif_pcr_req_ready(htif_pcr_req_ready),
-                      .htif_pcr_req_rw(1'b0),
-                      .htif_pcr_req_addr(`CSR_ADDR_TO_HOST),
-                      .htif_pcr_req_data(`HTIF_PCR_WIDTH'b0),
-                      .htif_pcr_resp_valid(htif_pcr_resp_valid),
-                      .htif_pcr_resp_ready(1'b1),
-                      .htif_pcr_resp_data(htif_pcr_resp_data)
-                      );
+         .clk(clk),
+         .reset(reset),
+         .htif_pcr_req_valid(1'b1),
+         .htif_pcr_req_ready(htif_pcr_req_ready),
+         .htif_pcr_req_rw(1'b0),
+         .htif_pcr_req_addr(`CSR_ADDR_TO_HOST),
+         .htif_pcr_req_data(`HTIF_PCR_WIDTH'b0),
+         .htif_pcr_resp_valid(htif_pcr_resp_valid),
+         .htif_pcr_resp_ready(1'b1),
+         .htif_pcr_resp_data(htif_pcr_resp_data),
+         //  info: hardset pin: should set this via Vtop in the future
+         .arbiter_next_core(arbiter_token)
+      );
 
    integer i = 0;
    integer j = 0;
@@ -46,18 +49,21 @@ module vscale_verilator_top(
       if ($value$plusargs("max-cycles=%d", max_cycles) && $value$plusargs("loadmem=%s", loadmem)) begin
          $readmemh(loadmem, hexfile);
          for (i = 0; i < hexfile_words; i = i + 1) begin
+            $display("%x", hexfile[i][0+:128]);
             for (j = 0; j < 4; j = j + 1) begin
                DUT.hasti_mem.mem[4*i+j] = hexfile[i][32*j+:32];
             end
          end
       end
+      $display("\n");
    end // initial begin
 
    always @(posedge clk) begin
       trace_count = trace_count + 1;
+      // arbiter_token = $urandom%2;
       // $display("Current: %d, max: %d\n", trace_count, max_cycles);
       if (max_cycles > 0 && trace_count > max_cycles)
-        reason = "timeout";
+         reason = "timeout";
 
       if (!reset) begin
          if (htif_pcr_resp_valid && htif_pcr_resp_data != 0) begin

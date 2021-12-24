@@ -33,36 +33,62 @@ int main(int argc, char **argv, char **env) {
         c = getopt_long(argc, argv, "",
                         long_options, &option_index);
         if (c == -1) break;
-    
+        
         switch (c) {
-            case 0:
-                if (optarg)
-                    strncpy(vcdfile,optarg,VCD_PATH_LENGTH);
-                break;
+        case 0:
+        if (optarg)
+            strncpy(vcdfile,optarg,VCD_PATH_LENGTH);
+            break;
             default:
-                break;
+            break;
         }
     }
 
-    Verilated::commandArgs(argc, argv);
-    Verilated::traceEverOn(true);
-    VerilatedVcdC* tfp = new VerilatedVcdC;
-    Vvscale_verilator_top* verilator_top = new Vvscale_verilator_top;
-    verilator_top->trace(tfp, 99); // requires explicit max levels param
-    tfp->open(vcdfile);
-    vluint64_t main_time = 0;
-    while (!Verilated::gotFinish()) {
-        verilator_top->reset = (main_time < 200) ? 1 : 0;
-        // changed this to start at posedge
-        if (main_time % 100 == 50)
-            verilator_top->clk = 0;
-        if (main_time % 100 == 0)
-            verilator_top->clk = 1;
-        verilator_top->eval();
-        tfp->dump(main_time);
-        main_time += 50;
+    srand(time(NULL));
+    bool arbiter_token[NUM_CYCLES];
+    int randval;
+    int cycle_count = 0;
+    for (int i = 0; i < NUM_CYCLES; i++) {
+        randval = rand() % 2;
+        std::cout << randval;
+        if (randval == 0) {
+          arbiter_token[i] = false;  
+        }
+        else {
+          // change this for single core design
+          arbiter_token[i] = false;
+        }
+        
+            
     }
-    delete verilator_top;
-    tfp->close();
-    exit(0);
+
+  // std::cout << "here: " << arbiter_token[30] << std::endl;
+
+  Verilated::commandArgs(argc, argv);
+  Verilated::traceEverOn(true);
+  VerilatedVcdC* tfp = new VerilatedVcdC;
+  Vvscale_verilator_top* verilator_top = new Vvscale_verilator_top;
+  verilator_top->trace(tfp, 99); // requires explicit max levels param
+  tfp->open(vcdfile);
+  vluint64_t main_time = 0;
+  while (!Verilated::gotFinish()) {
+    verilator_top->reset = (main_time < 200) ? 1 : 0;
+    if (main_time % 100 == 50) {
+      cycle_count = main_time/100;
+      if (cycle_count < NUM_CYCLES)
+        verilator_top->arbiter_token = arbiter_token[cycle_count];
+      else
+        verilator_top->arbiter_token = arbiter_token[NUM_CYCLES-1];
+      verilator_top->clk = 0;
+    }
+    if (main_time % 100 == 0) {
+      verilator_top->clk = 1;
+    }
+    verilator_top->eval();
+    tfp->dump(main_time);
+    main_time += 50;
+  }
+  delete verilator_top;
+  tfp->close();
+  exit(0);
 }

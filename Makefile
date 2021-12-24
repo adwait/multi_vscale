@@ -1,3 +1,5 @@
+SHELL = /bin/bash
+
 include Makefrag
 
 V_SRC_DIR = src/main/verilog
@@ -18,6 +20,8 @@ VERILATOR_OPTS = \
 	-Wall \
 	-Wno-WIDTH \
 	-Wno-UNUSED \
+	-Wno-BLKSEQ \
+	-Wno-UNOPTFLAT \
 	--cc \
 	-I$(V_SRC_DIR) \
 	+1364-2001ext+v \
@@ -33,7 +37,6 @@ VCS_OPTS = -PP -notice -line +lint=all,noVCDE,noUI +v2k -timescale=1ns/10ps -qui
 	+define+DEBUG -debug_pp \
 	+incdir+$(V_SRC_DIR) -Mdirectory=$(SIM_DIR)/csrc \
 	+vc+list -CC "-I$(VCS_HOME)/include" \
-	-CC "-std=c++11" \
 
 MAX_CYCLES = 1000000
 
@@ -52,13 +55,18 @@ vscale_alu.v \
 vscale_mul_div.v \
 vscale_csr_file.v \
 vscale_PC_mux.v \
+vscale_arbiter.v \
 )
 
-# changed from test directory to source directory
 SIM_SRCS = $(addprefix $(V_SRC_DIR)/, \
-	vscale_sim_top.v \
-	vscale_dp_hasti_sram.v \
+vscale_sim_top.v \
+vscale_dp_hasti_sram.v \
 )
+
+# $(addprefix $(V_TEST_DIR)/, \
+# vscale_sim_top.v \
+# vscale_dp_hasti_sram.v \
+# )
 
 VCS_TOP = $(V_TEST_DIR)/vscale_hex_tb.v
 
@@ -73,6 +81,7 @@ vscale_alu_ops.vh \
 vscale_md_constants.vh \
 vscale_hasti_constants.vh \
 vscale_csr_addr_map.vh \
+vscale_multicore_constants.vh \
 )
 
 TEST_VPD_FILES = $(addprefix $(OUT_DIR)/,$(addsuffix .vpd,$(RV32_TESTS)))

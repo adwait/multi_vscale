@@ -1,0 +1,62 @@
+##   0:00:00  Solver: boolector
+##   0:00:05  Trying induction in step 17..
+##   0:00:08  Trying induction in step 16..
+##   0:00:13  Trying induction in step 15..
+##   0:00:20  Trying induction in step 14..
+##   0:00:36  Trying induction in step 13..
+##   0:00:54  Trying induction in step 12..
+##   0:01:06  Trying induction in step 11..
+##   0:01:29  Trying induction in step 10..
+##   0:01:53  Trying induction in step 9..
+##   0:02:53  waiting for solver (1 minute)
+##   0:02:57  Trying induction in step 8..
+##   0:03:57  waiting for solver (1 minute)
+##   0:05:12  Trying induction in step 7..
+##   0:06:12  waiting for solver (1 minute)
+##   0:09:57  Trying induction in step 6..
+##   0:10:57  waiting for solver (1 minute)
+##   0:13:27  Trying induction in step 5..
+##   0:14:27  waiting for solver (1 minute)
+##   0:18:27  waiting for solver (5 minutes)
+##   0:23:27  waiting for solver (10 minutes)
+##   0:28:27  waiting for solver (15 minutes)
+##   0:29:37  Trying induction in step 4..
+##   0:30:37  waiting for solver (1 minute)
+##   0:34:37  waiting for solver (5 minutes)
+##   0:39:37  waiting for solver (10 minutes)
+##   0:44:37  waiting for solver (15 minutes)
+##   0:59:37  waiting for solver (30 minutes)
+##   1:00:12  Trying induction in step 3..
+##   1:01:12  waiting for solver (1 minute)
+##   1:05:12  waiting for solver (5 minutes)
+##   1:10:12  waiting for solver (10 minutes)
+##   1:15:12  waiting for solver (15 minutes)
+##   1:30:12  waiting for solver (30 minutes)
+##   1:31:04  Trying induction in step 2..
+##   1:32:04  waiting for solver (1 minute)
+##   1:36:04  waiting for solver (5 minutes)
+##   1:41:04  waiting for solver (10 minutes)
+##   1:46:04  waiting for solver (15 minutes)
+##   2:01:04  waiting for solver (30 minutes)
+##   2:17:06  Trying induction in step 1..
+##   2:18:06  waiting for solver (1 minute)
+##   2:22:06  waiting for solver (5 minutes)
+##   2:27:06  waiting for solver (10 minutes)
+##   2:32:06  waiting for solver (15 minutes)
+##   2:47:06  waiting for solver (30 minutes)
+##   3:17:06  waiting for solver (1 hour)
+##   4:37:59  Trying induction in step 0..
+##   4:38:59  waiting for solver (1 minute)
+##   4:42:59  waiting for solver (5 minutes)
+##   4:47:59  waiting for solver (10 minutes)
+##   4:52:59  waiting for solver (15 minutes)
+##   5:07:59  waiting for solver (30 minutes)
+##   5:37:59  waiting for solver (1 hour)
+##   6:37:59  waiting for solver (2 hours)
+##   7:37:59  waiting for solver (3 hours)
+##   8:26:24  Temporal induction failed!
+##   8:26:24  Assert failed in vscale_sim_top: formal-ind.v:115.16-119.54
+##   8:26:24  Writing trace to VCD file: engine_0/trace_induct.vcd
+##   8:27:10  Writing trace to Verilog testbench: engine_0/trace_induct_tb.v
+##   8:27:10  Writing trace to constraints file: engine_0/trace_induct.smtc
+##   8:27:15  Status: failed
