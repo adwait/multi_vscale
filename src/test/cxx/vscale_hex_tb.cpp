@@ -71,6 +71,7 @@ int main(int argc, char **argv, char **env) {
   verilator_top->trace(tfp, 99); // requires explicit max levels param
   tfp->open(vcdfile);
   vluint64_t main_time = 0;
+  verilator_top->inp_port_imem_hrdata = 4391699;
   while (!Verilated::gotFinish()) {
     verilator_top->reset = (main_time < 200) ? 1 : 0;
     if (main_time % 100 == 50) {

@@ -65,6 +65,8 @@
         end
 
         always @(posedge clk) begin
+            // assume(inp_port_imem_hrdata[14:12] == 0);
+            assume(inp_port_imem_hrdata[6:0] == 7'b0010011);
             assume(htif_pcr_req_valid == 0);
             assume(htif_pcr_req_rw == 0);
             assume(htif_pcr_req_addr == 0);

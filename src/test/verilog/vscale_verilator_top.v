@@ -1,10 +1,14 @@
 `include "vscale_ctrl_constants.vh"
 `include "vscale_csr_addr_map.vh"
+`include "vscale_multicore_constants.vh"
+`include "vscale_hasti_constants.vh"
 
 module vscale_verilator_top(
       input clk,
       input reset,
-      input arbiter_token                 
+      input arbiter_token,
+
+      input [`NUM_CORES*`HASTI_BUS_WIDTH-1:0] inp_port_imem_hrdata
    );
 
    localparam hexfile_words = 8;
@@ -34,33 +38,43 @@ module vscale_verilator_top(
          .htif_pcr_resp_ready(1'b1),
          .htif_pcr_resp_data(htif_pcr_resp_data),
          //  info: hardset pin: should set this via Vtop in the future
-         .arbiter_next_core(arbiter_token)
+         .arbiter_next_core(arbiter_token),
+
+         .inp_port_imem_hrdata(inp_port_imem_hrdata)
       );
 
    integer i = 0;
    integer j = 0;
    integer tmp = 0;
    
+   // initial begin
+   //    loadmem = 0;
+   //    reason = 0;
+   //    max_cycles = 0;
+   //    trace_count = 0;
+   //    if ($value$plusargs("max-cycles=%d", max_cycles) && $value$plusargs("loadmem=%s", loadmem)) begin
+   //       $readmemh(loadmem, hexfile);
+   //       for (i = 0; i < hexfile_words; i = i + 1) begin
+   //          $display("%x", hexfile[i][0+:128]);
+   //          for (j = 0; j < 4; j = j + 1) begin
+   //             DUT.hasti_mem.mem[4*i+j] = hexfile[i][32*j+:32];
+   //          end
+   //       end
+   //    end
+   //    $display("\n");
+   // end // initial begin
+
+   // info: removed the memory and the arbiter
    initial begin
-      loadmem = 0;
-      reason = 0;
-      max_cycles = 0;
-      trace_count = 0;
-      if ($value$plusargs("max-cycles=%d", max_cycles) && $value$plusargs("loadmem=%s", loadmem)) begin
-         $readmemh(loadmem, hexfile);
-         for (i = 0; i < hexfile_words; i = i + 1) begin
-            $display("%x", hexfile[i][0+:128]);
-            for (j = 0; j < 4; j = j + 1) begin
-               DUT.hasti_mem.mem[4*i+j] = hexfile[i][32*j+:32];
-            end
-         end
+      if ($value$plusargs("max-cycles=%d", max_cycles)) begin
+         $display("Loaded argument max-cycles\n");
       end
-      $display("\n");
-   end // initial begin
+   end
 
    always @(posedge clk) begin
       trace_count = trace_count + 1;
       // arbiter_token = $urandom%2;
+      
       // $display("Current: %d, max: %d\n", trace_count, max_cycles);
       if (max_cycles > 0 && trace_count > max_cycles)
          reason = "timeout";

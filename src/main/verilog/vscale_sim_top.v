@@ -17,7 +17,10 @@ module vscale_sim_top(
 	input                        htif_pcr_resp_ready,
 	output [`HTIF_PCR_WIDTH-1:0] htif_pcr_resp_data,
 	// input
-	input [`CORE_IDX_WIDTH-1:0]  arbiter_next_core
+	input [`CORE_IDX_WIDTH-1:0]  arbiter_next_core,
+
+	// new input for instruction
+	input [`NUM_CORES*`HASTI_BUS_WIDTH-1:0]	inp_port_imem_hrdata
 	);
 
 	wire                                            resetn;
@@ -81,7 +84,8 @@ module vscale_sim_top(
 	wire [`NUM_CORES*`HASTI_RESP_WIDTH-1:0]                    port_dmem_hresp;
 
 	// Hardcode instruction inputs:
-	assign	port_imem_hrdata 	= {`NUM_CORES{32'h00000013}};
+	// assign	port_imem_hrdata 	= {`NUM_CORES{32'h00230313}};
+	assign	port_imem_hrdata 	= inp_port_imem_hrdata;
 	assign	port_imem_hready 	= {`NUM_CORES{1'b1}};
 	assign	port_imem_hresp 	= {`NUM_CORES{`HASTI_RESP_WIDTH'd0}};
 	// Hardcode (unused) instruction inputs:
