@@ -1,14 +1,13 @@
 [options]
 mode prove
-depth 17
 
 [engines]
-smtbmc boolector
+abc pdr
 
 [script]
-read -formal mvscale_top_c1-ind.v
+read -formal mvscale_top_c1_nonmem.v
 prep -top vscale_sim_top
 
 [files]
-mvscale_top_c1-ind.v
-formal-ind.v
+mvscale_top_c1_nonmem.v
+formal.v

@@ -32,6 +32,7 @@ module vscale_sim_top(
 	wire [`HASTI_PROT_WIDTH-1:0]                    imem_hprot [0:`NUM_CORES-1];
 	wire [`HASTI_TRANS_WIDTH-1:0]                   imem_htrans [0:`NUM_CORES-1];
 	wire [`HASTI_BUS_WIDTH-1:0]                     imem_hwdata [0:`NUM_CORES-1];
+	// input to core
 	wire [`HASTI_BUS_WIDTH-1:0]                     imem_hrdata [0:`NUM_CORES-1];
 	wire                                            imem_hready [0:`NUM_CORES-1];
 	wire [`HASTI_RESP_WIDTH-1:0]                    imem_hresp [0:`NUM_CORES-1];
@@ -48,6 +49,8 @@ module vscale_sim_top(
 	wire [`HASTI_BUS_WIDTH-1:0]                     dmem_hrdata [0:`NUM_CORES-1];
 	wire                                            dmem_hready [0:`NUM_CORES-1];
 	wire [`HASTI_RESP_WIDTH-1:0]                    dmem_hresp [0:`NUM_CORES-1];
+
+
 
 
 	// ************* Flattened ports for arbiter
@@ -76,6 +79,15 @@ module vscale_sim_top(
 	wire [`NUM_CORES*`HASTI_BUS_WIDTH-1:0]                     port_dmem_hrdata;
 	wire [`NUM_CORES-1:0]                                           port_dmem_hready;
 	wire [`NUM_CORES*`HASTI_RESP_WIDTH-1:0]                    port_dmem_hresp;
+
+	// Hardcode instruction inputs:
+	assign	port_imem_hrdata 	= {`NUM_CORES{32'h00000013}};
+	assign	port_imem_hready 	= {`NUM_CORES{1'b1}};
+	assign	port_imem_hresp 	= {`NUM_CORES{`HASTI_RESP_WIDTH'd0}};
+	// Hardcode (unused) instruction inputs:
+	assign	port_dmem_hrdata 	= {`NUM_CORES{32'h00000013}};
+	assign	port_dmem_hready 	= {`NUM_CORES{1'b1}};
+	assign	port_dmem_hresp 	= {`NUM_CORES{`HASTI_RESP_WIDTH'd0}};
 
 	genvar i_flat;
     for (i_flat = 0; i_flat < `NUM_CORES; i_flat=i_flat+1) begin
@@ -196,60 +208,60 @@ module vscale_sim_top(
 	   	end
    	endgenerate
 
-   	vscale_arbiter arbiter(
-		.clk(clk),
-		.reset(reset),
-		.core_haddr(port_dmem_haddr),
-		.core_hwrite(port_dmem_hwrite),
-		.core_hsize(port_dmem_hsize),
-		.core_hburst(port_dmem_hburst),
-		.core_hmastlock(port_dmem_hmastlock),
-		.core_hprot(port_dmem_hprot),
-		.core_htrans(port_dmem_htrans),
-		.core_hwdata(port_dmem_hwdata),
-		.core_hrdata(port_dmem_hrdata),
-		.core_hready(port_dmem_hready),
-		.core_hresp(port_dmem_hresp),
-		.dmem_haddr(arbiter_dmem_haddr),
-		.dmem_hwrite(arbiter_dmem_hwrite),
-		.dmem_hsize(arbiter_dmem_hsize),
-		.dmem_hburst(arbiter_dmem_hburst),
-		.dmem_hmastlock(arbiter_dmem_hmastlock),
-		.dmem_hprot(arbiter_dmem_hprot),
-		.dmem_htrans(arbiter_dmem_htrans),
-		.dmem_hwdata(arbiter_dmem_hwdata),
-		.dmem_hrdata(arbiter_dmem_hrdata),
-		.dmem_hready(arbiter_dmem_hready),
-		.dmem_hresp(arbiter_dmem_hresp),
-		.next_core(arbiter_next_core)
-	);
+   	// vscale_arbiter arbiter(
+	// 	.clk(clk),
+	// 	.reset(reset),
+	// 	.core_haddr(port_dmem_haddr),
+	// 	.core_hwrite(port_dmem_hwrite),
+	// 	.core_hsize(port_dmem_hsize),
+	// 	.core_hburst(port_dmem_hburst),
+	// 	.core_hmastlock(port_dmem_hmastlock),
+	// 	.core_hprot(port_dmem_hprot),
+	// 	.core_htrans(port_dmem_htrans),
+	// 	.core_hwdata(port_dmem_hwdata),
+	// 	.core_hrdata(port_dmem_hrdata),
+	// 	.core_hready(port_dmem_hready),
+	// 	.core_hresp(port_dmem_hresp),
+	// 	.dmem_haddr(arbiter_dmem_haddr),
+	// 	.dmem_hwrite(arbiter_dmem_hwrite),
+	// 	.dmem_hsize(arbiter_dmem_hsize),
+	// 	.dmem_hburst(arbiter_dmem_hburst),
+	// 	.dmem_hmastlock(arbiter_dmem_hmastlock),
+	// 	.dmem_hprot(arbiter_dmem_hprot),
+	// 	.dmem_htrans(arbiter_dmem_htrans),
+	// 	.dmem_hwdata(arbiter_dmem_hwdata),
+	// 	.dmem_hrdata(arbiter_dmem_hrdata),
+	// 	.dmem_hready(arbiter_dmem_hready),
+	// 	.dmem_hresp(arbiter_dmem_hresp),
+	// 	.next_core(arbiter_next_core)
+	// );
 
-   	vscale_dp_hasti_sram hasti_mem(
-		.hclk(clk),
-		.hresetn(resetn),
-		.p1_haddr(port_imem_haddr),
-		.p1_hwrite(port_imem_hwrite),
-		.p1_hsize(port_imem_hsize),
-		.p1_hburst(port_imem_hburst),
-		.p1_hmastlock(port_imem_hmastlock),
-		.p1_hprot(port_imem_hprot),
-		.p1_htrans(port_imem_htrans),
-		.p1_hwdata(port_imem_hwdata),
-		.p1_hrdata(port_imem_hrdata),
-		.p1_hready(port_imem_hready),
-		.p1_hresp(port_imem_hresp),
-		.p0_haddr(arbiter_dmem_haddr),
-		.p0_hwrite(arbiter_dmem_hwrite),
-		.p0_hsize(arbiter_dmem_hsize),
-		.p0_hburst(arbiter_dmem_hburst),
-		.p0_hmastlock(arbiter_dmem_hmastlock),
-		.p0_hprot(arbiter_dmem_hprot),
-		.p0_htrans(arbiter_dmem_htrans),
-		.p0_hwdata(arbiter_dmem_hwdata),
-		.p0_hrdata(arbiter_dmem_hrdata),
-		.p0_hready(arbiter_dmem_hready),
-		.p0_hresp(arbiter_dmem_hresp),
-        .port_mem(port_mem)
-	);
+   	// vscale_dp_hasti_sram hasti_mem(
+	// 	.hclk(clk),
+	// 	.hresetn(resetn),
+	// 	.p1_haddr(port_imem_haddr),
+	// 	.p1_hwrite(port_imem_hwrite),
+	// 	.p1_hsize(port_imem_hsize),
+	// 	.p1_hburst(port_imem_hburst),
+	// 	.p1_hmastlock(port_imem_hmastlock),
+	// 	.p1_hprot(port_imem_hprot),
+	// 	.p1_htrans(port_imem_htrans),
+	// 	.p1_hwdata(port_imem_hwdata),
+	// 	.p1_hrdata(port_imem_hrdata),
+	// 	.p1_hready(port_imem_hready),
+	// 	.p1_hresp(port_imem_hresp),
+	// 	.p0_haddr(arbiter_dmem_haddr),
+	// 	.p0_hwrite(arbiter_dmem_hwrite),
+	// 	.p0_hsize(arbiter_dmem_hsize),
+	// 	.p0_hburst(arbiter_dmem_hburst),
+	// 	.p0_hmastlock(arbiter_dmem_hmastlock),
+	// 	.p0_hprot(arbiter_dmem_hprot),
+	// 	.p0_htrans(arbiter_dmem_htrans),
+	// 	.p0_hwdata(arbiter_dmem_hwdata),
+	// 	.p0_hrdata(arbiter_dmem_hrdata),
+	// 	.p0_hready(arbiter_dmem_hready),
+	// 	.p0_hresp(arbiter_dmem_hresp),
+    //     .port_mem(port_mem)
+	// );
 
 endmodule // vscale_sim_top

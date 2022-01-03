@@ -1,0 +1,22 @@
+SBY 16:31:48 [sec-ind] Removing directory 'sec-ind'.
+SBY 16:31:48 [sec-ind] Copy 'mvscale_top_c1_nonmem.v' to 'sec-ind/src/mvscale_top_c1_nonmem.v'.
+SBY 16:31:48 [sec-ind] Copy 'formal.v' to 'sec-ind/src/formal.v'.
+SBY 16:31:48 [sec-ind] engine_0: abc pdr
+SBY 16:31:48 [sec-ind] nomem: starting process "cd sec-ind/src; yosys -ql ../model/design_nomem.log ../model/design_nomem.ys"
+SBY 16:31:49 [sec-ind] nomem: Warning: Replacing memory \windows with list of registers. See formal.v:96, formal.v:82, formal.v:31
+SBY 16:32:00 [sec-ind] nomem: finished (returncode=0)
+SBY 16:32:00 [sec-ind] aig: starting process "cd sec-ind/model; yosys -ql design_aiger.log design_aiger.ys"
+SBY 16:32:07 [sec-ind] aig: finished (returncode=0)
+SBY 16:32:07 [sec-ind] engine_0: starting process "cd sec-ind; yosys-abc -c 'read_aiger model/design_aiger.aig; fold; strash; pdr; write_cex -a engine_0/trace.aiw'"
+SBY 16:32:09 [sec-ind] engine_0: ABC command line: "read_aiger model/design_aiger.aig; fold; strash; pdr; write_cex -a engine_0/trace.aiw".
+SBY 16:32:09 [sec-ind] engine_0: Warning: The last 8 outputs are interpreted as constraints.
+SBY 16:32:09 [sec-ind] engine_0: Invariant F[12] : 465 clauses with 243 flops (out of 243) (cex = 0, ave = 56.19)
+SBY 16:32:09 [sec-ind] engine_0: Verification of invariant with 465 clauses was successful.  Time =     0.01 sec
+SBY 16:32:09 [sec-ind] engine_0: Property proved.  Time =     1.57 sec
+SBY 16:32:09 [sec-ind] engine_0: Counter-example is not available.
+SBY 16:32:09 [sec-ind] engine_0: finished (returncode=0)
+SBY 16:32:09 [sec-ind] engine_0: Status returned by engine: PASS
+SBY 16:32:09 [sec-ind] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:20 (20)
+SBY 16:32:09 [sec-ind] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:20 (20)
+SBY 16:32:09 [sec-ind] summary: engine_0 (abc pdr) returned PASS
+SBY 16:32:09 [sec-ind] DONE (PASS, rc=0)
