@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <time.h>
+#include <vector>
 #include <stdlib.h>
 
 #define VCD_PATH_LENGTH 256
@@ -44,20 +45,29 @@ int main(int argc, char **argv, char **env) {
         }
     }
 
+
+    vector<bool> preseq = {0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
+
     srand(time(NULL));
     bool arbiter_token[NUM_CYCLES];
     int randval;
     int cycle_count = 0;
     for (int i = 0; i < NUM_CYCLES; i++) {
-        randval = rand() % 2;
-        std::cout << randval;
-        if (randval == 0) {
-          arbiter_token[i] = false;  
+        if (i < preseq.size()) {
+          randval = preseq[i];
+          std::cout << randval;
+          arbiter_token[i] = randval;
+        } else {
+          randval = rand() % 2;
+          std::cout << randval;
+          if (randval == 0) {
+            arbiter_token[i] = false;  
+          }
+          else {
+            // change this for single core design
+            arbiter_token[i] = true;
+          }   
         }
-        else {
-          // change this for single core design
-          arbiter_token[i] = true;
-        }   
     }
 
   // std::cout << "here: " << arbiter_token[30] << std::endl;
@@ -73,13 +83,13 @@ int main(int argc, char **argv, char **env) {
     verilator_top->reset = (main_time < 200) ? 1 : 0;
     if (main_time % 100 == 50) {
       cycle_count = main_time/100;
+      verilator_top->clk = 0;
+    }
+    if (main_time % 100 == 0) {
       if (cycle_count < NUM_CYCLES)
         verilator_top->arbiter_token = arbiter_token[cycle_count];
       else
         verilator_top->arbiter_token = arbiter_token[NUM_CYCLES-1];
-      verilator_top->clk = 0;
-    }
-    if (main_time % 100 == 0) {
       verilator_top->clk = 1;
     }
     verilator_top->eval();

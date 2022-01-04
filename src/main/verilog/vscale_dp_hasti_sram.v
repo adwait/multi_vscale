@@ -28,7 +28,7 @@ module vscale_dp_hasti_sram(
         output [`NUM_CORES*`HASTI_BUS_WIDTH-1:0]  p1_hrdata,
         output [`NUM_CORES-1:0]    p1_hready,
         output [`NUM_CORES*`HASTI_RESP_WIDTH-1:0] p1_hresp,
-        output [`MEM_WORDS*`HASTI_BUS_WIDTH-1:0] port_mem
+        output [`MEM_WORDS*`HASTI_BUS_WIDTH-1:0]    port_mem
     );
 
 

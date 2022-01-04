@@ -4,20 +4,32 @@
         `define XPR_LEN 32
         `define PIPELINE_DEPTH 3
         `define PIPELINE_WIDTH 3
-        
-        reg [`XPR_LEN-1:0]  windows [0:`PIPELINE_WIDTH-1];
-        reg [`XPR_LEN-1:0]  next_pc;
-        reg [`PIPELINE_DEPTH-1:0]     events  [0:`PIPELINE_WIDTH-1];
-        wire                done    [0:`PIPELINE_WIDTH-1];
-        wire                bad     [0:`PIPELINE_WIDTH-1];          
-        
-        assign done[0]  = &events[0];    
-        assign done[1]  = &events[1];    
-        assign done[2]  = &events[2];
+        `define NUM_CORES   2
 
-        assign bad[0]   = events[0][2:2] && !(events[0][0:0] && events[0][1:1]);
-        assign bad[1]   = events[1][2:2] && !(events[1][0:0] && events[1][1:1]);
-        assign bad[2]   = events[2][2:2] && !(events[2][0:0] && events[2][1:1]);
+        reg [`XPR_LEN-1:0]  windows [0:`NUM_CORES-1] [0:`PIPELINE_WIDTH-1];
+        reg [`XPR_LEN-1:0]  next_pc [0:`NUM_CORES-1];
+        reg [`PIPELINE_DEPTH-1:0]     events [0:`NUM_CORES-1] [0:`PIPELINE_WIDTH-1];
+        wire                done    [0:`NUM_CORES-1] [0:`PIPELINE_WIDTH-1];
+        wire                bad     [0:`NUM_CORES-1] [0:`PIPELINE_WIDTH-1];          
+        
+        // The done signal
+        assign done[0][0]  = &events[0][0];
+        assign done[0][1]  = &events[0][1];
+        assign done[0][2]  = &events[0][2];
+
+        assign done[1][0]  = &events[1][0];
+        assign done[1][1]  = &events[1][1];
+        assign done[1][2]  = &events[1][2];
+
+
+        assign bad[0][0]   = events[0][0][2:2] && !(events[0][0][0:0] && events[0][0][1:1]);
+        assign bad[0][1]   = events[0][1][2:2] && !(events[0][1][0:0] && events[0][1][1:1]);
+        assign bad[0][2]   = events[0][2][2:2] && !(events[0][2][0:0] && events[0][2][1:1]);
+
+        assign bad[0][0]   = events[0][2:2] && !(events[0][0:0] && events[0][1:1]);
+        assign bad[0][1]   = events[1][2:2] && !(events[1][0:0] && events[1][1:1]);
+        assign bad[0][2]   = events[2][2:2] && !(events[2][0:0] && events[2][1:1]);
+
 
         reg [3:0]           counter;
 
