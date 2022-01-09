@@ -46,23 +46,25 @@ module vscale_verilator_top(
    integer i = 0;
    integer j = 0;
    integer tmp = 0;
-   
-   // initial begin
-   //    loadmem = 0;
-   //    reason = 0;
-   //    max_cycles = 0;
-   //    trace_count = 0;
-   //    if ($value$plusargs("max-cycles=%d", max_cycles) && $value$plusargs("loadmem=%s", loadmem)) begin
-   //       $readmemh(loadmem, hexfile);
-   //       for (i = 0; i < hexfile_words; i = i + 1) begin
-   //          $display("%x", hexfile[i][0+:128]);
-   //          for (j = 0; j < 4; j = j + 1) begin
-   //             DUT.hasti_mem.mem[4*i+j] = hexfile[i][32*j+:32];
-   //          end
-   //       end
-   //    end
-   //    $display("\n");
-   // end // initial begin
+
+`ifdef FROM_HEXFILE   
+   initial begin
+      loadmem = 0;
+      reason = 0;
+      max_cycles = 0;
+      trace_count = 0;
+      if ($value$plusargs("max-cycles=%d", max_cycles) && $value$plusargs("loadmem=%s", loadmem)) begin
+         $readmemh(loadmem, hexfile);
+         for (i = 0; i < hexfile_words; i = i + 1) begin
+            $display("%x", hexfile[i][0+:128]);
+            for (j = 0; j < 4; j = j + 1) begin
+               DUT.hasti_mem.mem[4*i+j] = hexfile[i][32*j+:32];
+            end
+         end
+      end
+      $display("\n");
+   end // initial begin
+`endif
 
    // info: removed the memory and the arbiter
    initial begin

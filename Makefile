@@ -28,6 +28,7 @@ VERILATOR_OPTS = \
 	-Wno-fatal \
 	--Mdir sim \
 	--trace \
+	--top-module vscale_verilator_top \
 
 VERILATOR_MAKE_OPTS = OPT_FAST="-O3"
 
@@ -55,12 +56,14 @@ vscale_alu.v \
 vscale_mul_div.v \
 vscale_csr_file.v \
 vscale_PC_mux.v \
+vscale_arbiter.v \
 )
 # info: removed from here
 # vscale_arbiter.v \
 
 SIM_SRCS = $(addprefix $(V_SRC_DIR)/, \
 vscale_sim_top.v \
+vscale_dp_hasti_sram.v \
 )
 # info: removed from here
 # vscale_dp_hasti_sram.v \

@@ -146,10 +146,15 @@ module vscale_pipeline(
     wire                                          halted;
 
     // assign to port PCs
-    assign port_PC_IF = PC_IF;
-    assign port_PC_DX = PC_DX;
-    assign port_PC_WB = PC_WB;
+    assign port_PC_IF = tag_IF;
+    assign port_PC_DX = tag_DX;
+    assign port_PC_WB = tag_WB;
 
+    wire [`XPR_LEN-1:0] tag_PIF;
+    reg [`XPR_LEN-1:0]  tag_IF;
+    reg [`XPR_LEN-1:0]  tag_DX;
+    reg [`XPR_LEN-1:0]  tag_WB;
+    
     vscale_ctrl ctrl(
                     .clk(clk),
                     .reset(reset),
@@ -206,7 +211,9 @@ module vscale_pipeline(
                         .PC_DX(PC_DX),
                         .handler_PC(handler_PC),
                         .epc(epc),
-                        .PC_PIF(PC_PIF)
+                        .PC_PIF(PC_PIF),
+                        .tag_IF(tag_IF),
+                        .tag_PIF(tag_PIF)
                         );
 
     assign imem_addr = PC_PIF;
@@ -215,15 +222,17 @@ module vscale_pipeline(
     //can get them to execute different instructions.
     always @(posedge clk) begin
         if (reset) begin
-        case (core_id)
-            2'b00 : PC_IF <= 4;
-            2'b01 : PC_IF <= 24;
-            2'b10 : PC_IF <= 44;
-            2'b11 : PC_IF <= 64;
-            default : PC_IF <= 0;
-        endcase // case (core_id)
+            case (core_id)
+                2'b00 : PC_IF <= 4;
+                2'b01 : PC_IF <= 24;
+                2'b10 : PC_IF <= 44;
+                2'b11 : PC_IF <= 64;
+                default : PC_IF <= 0;
+            endcase // case (core_id)
+            tag_IF <= 4;
         end else if (~stall_IF) begin
             PC_IF <= PC_PIF;
+            tag_IF <= tag_PIF;
         end
     end
 
@@ -233,21 +242,23 @@ module vscale_pipeline(
         if (reset) begin
             PC_DX <= 0;
             inst_DX <= `RV_NOP;
+            tag_DX <= 0;
         end else if (~stall_DX) begin
             if (kill_IF) begin
-            PC_DX <= 32'd120; //so pipeline bubbles don't interfere with assertions.
-            inst_DX <= `RV_NOP;
-            end else begin
-            if(halted) begin
                 PC_DX <= 32'd120; //so pipeline bubbles don't interfere with assertions.
                 inst_DX <= `RV_NOP;
             end else begin
-                PC_DX <= PC_IF;
-            `ifndef NOTRACE    
-                $display("[event@core:%d], %x, IF", core_id, PC_IF);
-            `endif
-                inst_DX <= imem_rdata;
-            end
+                if(halted) begin
+                    PC_DX <= 32'd120; //so pipeline bubbles don't interfere with assertions.
+                    inst_DX <= `RV_NOP;
+                end else begin
+                    PC_DX <= PC_IF;
+                    tag_DX <= tag_IF;
+                `ifndef NOTRACE
+                    $display("[event@core:%d], %x, IF", core_id, PC_IF);
+                `endif
+                    inst_DX <= imem_rdata;
+                end
             end
         end
     end // always @ (posedge clk)
@@ -328,14 +339,16 @@ module vscale_pipeline(
                 PC_WB <= `XPR_LEN'b0;
                 store_data_WB <= `XPR_LEN'b0;
                 alu_out_WB <= `XPR_LEN'b0;
+                tag_WB <= 0;
             `endif
         end else if (~stall_WB) begin
             `ifndef NOTRACE
-                    if (PC_WB != `XPR_LEN'b0 && PC_WB != `XPR_LEN'd120) begin
+                if (PC_WB != `XPR_LEN'b0 && PC_WB != `XPR_LEN'd120) begin
                     $display("[event@core:%d], %x, WB", core_id, PC_WB);   
-                    end
+                end
             `endif
             PC_WB <= PC_DX;
+            tag_WB <= tag_DX;
             `ifndef NOTRACE
                     if (PC_DX != `XPR_LEN'd120) begin
                         $display("[event@core:%d], %x, DX", core_id, PC_DX);

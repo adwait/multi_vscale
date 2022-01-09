@@ -9,7 +9,9 @@ module vscale_PC_mux(
 		input [`XPR_LEN-1:0]          PC_DX,
 		input [`XPR_LEN-1:0]          handler_PC,
 		input [`XPR_LEN-1:0]          epc,
-		output [`XPR_LEN-1:0]         PC_PIF
+		output [`XPR_LEN-1:0]         PC_PIF,
+		input [`XPR_LEN-1:0]		  tag_IF,
+		output [`XPR_LEN-1:0]		  tag_PIF
 	);
 
 	wire [`XPR_LEN-1:0]                             imm_b = { {20{inst_DX[31]}}, inst_DX[7], inst_DX[30:25], inst_DX[11:8], 1'b0 };
@@ -52,8 +54,10 @@ module vscale_PC_mux(
 		endcase // case (PC_src_sel)
 	end // always @ (*)
 
-	// assign PC_PIF = base + offset;
-	assign PC_PIF = (PC_IF == 32'd12) ? 32'd4 : (base + offset);
+
+	assign PC_PIF = base + offset;
+	// assign PC_PIF = (PC_IF == 32'd12) ? 32'd4 : (base + offset);
+	assign tag_PIF = (tag_IF == 32'd12) ? 32'd4 : (tag_IF + offset);
 
 
 endmodule // vscale_PC_mux

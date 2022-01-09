@@ -46,3 +46,8 @@
 `define MEM_TYPE_SD  `MEM_TYPE_WIDTH'd3
 
 `define HTIF_PCR_WIDTH 64
+
+/** ================================= 
+    // INFO: need to set/unset this depending upon whether you want hexfile instruction stream or manual/symbolic istream  
+    ================================= **/
+// `define FROM_HEXFILE 1   

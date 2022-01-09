@@ -90,20 +90,20 @@ module vscale_sim_top(
 	wire [`NUM_CORES*`HASTI_RESP_WIDTH-1:0]                    mem_port_imem_hresp;
 
 `ifdef FROM_HEXFILE
-	assign	port_imem_hrdata 	= mem_port_imem_hrdata;
-	assign	port_imem_hready 	= mem_port_imem_hready;
-	assign	port_imem_hresp 	= mem_port_imem_hresp;
 	// ports are connected from memory/arbiter buses
+	assign	port_imem_hrdata 	=   mem_port_imem_hrdata;
+	assign	port_imem_hready 	=   mem_port_imem_hready;
+	assign	port_imem_hresp 	=   mem_port_imem_hresp;
 `else
 	// Hardcode instruction inputs:
 	// assign	port_imem_hrdata 	= {`NUM_CORES{32'h00230313}};
-	assign	port_imem_hrdata 	= inp_port_imem_hrdata;
-	assign	port_imem_hready 	= {`NUM_CORES{1'b1}};
-	assign	port_imem_hresp 	= {`NUM_CORES{`HASTI_RESP_WIDTH'd0}};
-	// Hardcode (unused) data inputs:
-	assign	port_dmem_hrdata 	= {`NUM_CORES{32'h0}};
-	assign	port_dmem_hready 	= {`NUM_CORES{1'b1}};
-	assign	port_dmem_hresp 	= {`NUM_CORES{`HASTI_RESP_WIDTH'd0}};
+	assign	port_imem_hrdata 	=   inp_port_imem_hrdata;
+	assign	port_imem_hready 	=   {`NUM_CORES{1'b1}};
+	assign	port_imem_hresp 	=   {`NUM_CORES{`HASTI_RESP_WIDTH'd0}};
+	// Hardcode (unused) instruction inputs:
+	// assign	port_dmem_hrdata 	= {`NUM_CORES{32'h00000013}};
+	// assign	port_dmem_hready 	= {`NUM_CORES{1'b1}};
+	// assign	port_dmem_hresp 	= {`NUM_CORES{`HASTI_RESP_WIDTH'd0}};
 `endif
 
 	genvar i_flat;
@@ -225,62 +225,60 @@ module vscale_sim_top(
 	   	end
    	endgenerate
 
-`ifdef FROM_HEXFILE
-   	vscale_arbiter arbiter(
-		.clk(clk),
-		.reset(reset),
-		.core_haddr(port_dmem_haddr),
-		.core_hwrite(port_dmem_hwrite),
-		.core_hsize(port_dmem_hsize),
-		.core_hburst(port_dmem_hburst),
-		.core_hmastlock(port_dmem_hmastlock),
-		.core_hprot(port_dmem_hprot),
-		.core_htrans(port_dmem_htrans),
-		.core_hwdata(port_dmem_hwdata),
-		.core_hrdata(port_dmem_hrdata),
-		.core_hready(port_dmem_hready),
-		.core_hresp(port_dmem_hresp),
-		.dmem_haddr(arbiter_dmem_haddr),
-		.dmem_hwrite(arbiter_dmem_hwrite),
-		.dmem_hsize(arbiter_dmem_hsize),
-		.dmem_hburst(arbiter_dmem_hburst),
-		.dmem_hmastlock(arbiter_dmem_hmastlock),
-		.dmem_hprot(arbiter_dmem_hprot),
-		.dmem_htrans(arbiter_dmem_htrans),
-		.dmem_hwdata(arbiter_dmem_hwdata),
-		.dmem_hrdata(arbiter_dmem_hrdata),
-		.dmem_hready(arbiter_dmem_hready),
-		.dmem_hresp(arbiter_dmem_hresp),
-		.next_core(arbiter_next_core)
-	);
+   	// vscale_arbiter arbiter(
+	// 	.clk(clk),
+	// 	.reset(reset),
+	// 	.core_haddr(port_dmem_haddr),
+	// 	.core_hwrite(port_dmem_hwrite),
+	// 	.core_hsize(port_dmem_hsize),
+	// 	.core_hburst(port_dmem_hburst),
+	// 	.core_hmastlock(port_dmem_hmastlock),
+	// 	.core_hprot(port_dmem_hprot),
+	// 	.core_htrans(port_dmem_htrans),
+	// 	.core_hwdata(port_dmem_hwdata),
+	// 	.core_hrdata(port_dmem_hrdata),
+	// 	.core_hready(port_dmem_hready),
+	// 	.core_hresp(port_dmem_hresp),
+	// 	.dmem_haddr(arbiter_dmem_haddr),
+	// 	.dmem_hwrite(arbiter_dmem_hwrite),
+	// 	.dmem_hsize(arbiter_dmem_hsize),
+	// 	.dmem_hburst(arbiter_dmem_hburst),
+	// 	.dmem_hmastlock(arbiter_dmem_hmastlock),
+	// 	.dmem_hprot(arbiter_dmem_hprot),
+	// 	.dmem_htrans(arbiter_dmem_htrans),
+	// 	.dmem_hwdata(arbiter_dmem_hwdata),
+	// 	.dmem_hrdata(arbiter_dmem_hrdata),
+	// 	.dmem_hready(arbiter_dmem_hready),
+	// 	.dmem_hresp(arbiter_dmem_hresp),
+	// 	.next_core(arbiter_next_core)
+	// );
 
-   	vscale_dp_hasti_sram hasti_mem(
-		.hclk(clk),
-		.hresetn(resetn),
-		.p1_haddr(port_imem_haddr),
-		.p1_hwrite(port_imem_hwrite),
-		.p1_hsize(port_imem_hsize),
-		.p1_hburst(port_imem_hburst),
-		.p1_hmastlock(port_imem_hmastlock),
-		.p1_hprot(port_imem_hprot),
-		.p1_htrans(port_imem_htrans),
-		.p1_hwdata(port_imem_hwdata),
-		.p1_hrdata(mem_port_imem_hrdata),
-		.p1_hready(mem_port_imem_hready),
-		.p1_hresp(mem_port_imem_hresp),
-		.p0_haddr(arbiter_dmem_haddr),
-		.p0_hwrite(arbiter_dmem_hwrite),
-		.p0_hsize(arbiter_dmem_hsize),
-		.p0_hburst(arbiter_dmem_hburst),
-		.p0_hmastlock(arbiter_dmem_hmastlock),
-		.p0_hprot(arbiter_dmem_hprot),
-		.p0_htrans(arbiter_dmem_htrans),
-		.p0_hwdata(arbiter_dmem_hwdata),
-		.p0_hrdata(arbiter_dmem_hrdata),
-		.p0_hready(arbiter_dmem_hready),
-		.p0_hresp(arbiter_dmem_hresp),
-        .port_mem(port_mem)
-	);
-`endif
+   	// vscale_dp_hasti_sram hasti_mem(
+	// 	.hclk(clk),
+	// 	.hresetn(resetn),
+	// 	.p1_haddr(port_imem_haddr),
+	// 	.p1_hwrite(port_imem_hwrite),
+	// 	.p1_hsize(port_imem_hsize),
+	// 	.p1_hburst(port_imem_hburst),
+	// 	.p1_hmastlock(port_imem_hmastlock),
+	// 	.p1_hprot(port_imem_hprot),
+	// 	.p1_htrans(port_imem_htrans),
+	// 	.p1_hwdata(port_imem_hwdata),
+	// 	.p1_hrdata(mem_port_imem_hrdata),
+	// 	.p1_hready(mem_port_imem_hready),
+	// 	.p1_hresp(mem_port_imem_hresp),
+	// 	.p0_haddr(arbiter_dmem_haddr),
+	// 	.p0_hwrite(arbiter_dmem_hwrite),
+	// 	.p0_hsize(arbiter_dmem_hsize),
+	// 	.p0_hburst(arbiter_dmem_hburst),
+	// 	.p0_hmastlock(arbiter_dmem_hmastlock),
+	// 	.p0_hprot(arbiter_dmem_hprot),
+	// 	.p0_htrans(arbiter_dmem_htrans),
+	// 	.p0_hwdata(arbiter_dmem_hwdata),
+	// 	.p0_hrdata(arbiter_dmem_hrdata),
+	// 	.p0_hready(arbiter_dmem_hready),
+	// 	.p0_hresp(arbiter_dmem_hresp),
+    //     .port_mem(port_mem)
+	// );
 
 endmodule // vscale_sim_top
