@@ -9,6 +9,8 @@
         wire                done    [0:`PIPELINE_WIDTH-1];
         wire                bad     [0:`PIPELINE_WIDTH-1];      
 
+        wire                po_bad  [0:`PIPELINE_WIDTH-1];
+
         assign done[0]  = &events[0];
         assign done[1]  = &events[1];
         assign done[2]  = &events[2];
@@ -18,6 +20,12 @@
         assign bad[1]   = events[1][2:2] && !(events[1][0:0] && events[1][1:1]);
         assign bad[2]   = events[2][2:2] && !(events[2][0:0] && events[2][1:1]);
         assign bad[3]   = events[3][2:2] && !(events[3][0:0] && events[3][1:1]);
+
+        // Program order fetch axiom
+        assign po_bad[0] = (!events[0][0:0] && events[1][0:0] && tail_ptr != 0);
+        assign po_bad[1] = (!events[1][0:0] && events[2][0:0] && tail_ptr != 1);
+        assign po_bad[2] = (!events[2][0:0] && events[3][0:0] && tail_ptr != 2);
+        assign po_bad[3] = (!events[3][0:0] && events[0][0:0] && tail_ptr != 3);
 
         reg [2:0]           counter;
         reg init;
@@ -51,7 +59,7 @@
             end
         end
 
-        (* anyconst *) reg [`XPR_LEN-1:0] instruction;
+        // (* anyconst *) reg [`XPR_LEN-1:0] instruction;
 
 `ifdef FORMAL
         always @(posedge clk) begin
@@ -59,16 +67,23 @@
             /* Memory operations 
                 info: no funct assumed, could be any ALU operation 
             */
-            assume(inp_port_imem_hrdata == instruction);
-            assume(instruction[19:12] == 0);
-            assume(instruction[6:0] == 7'd3);
-            assume(instruction[11:7] == 5'd8);
-            // assume(instruction[31:28] == 0);
+            // assume(inp_port_imem_hrdata == instruction);
+            // assume(inp_port_imem_hrdata[19:12] == 0);
+            assume(inp_port_imem_hrdata[6:0] == 7'h23 || inp_port_imem_hrdata[6:0] == 7'h03);
+            // assume(instruction[11:7] == 5'd8);
+            // assume(instruction[31:24] == 0);
             
-            assume(port_dmem_hready == 1);
+            // inp_port_imem_hrdata[31:20] = 0;
+            // inp_port_imem_hrdata[19:12] = 0;
+            // inp_port_imem_hrdata[11:7] = 5'd8;
+            // inp_port_imem_hrdata[6:0] = 7'd3;
+            
+            
+
+            // assume(port_dmem_hready == 1);
             // assume(port_mem == 0);
-            assume(port_dmem_hresp == 0);
-            assume(port_dmem_hrdata == 0);
+            // assume(port_dmem_hresp == 0);
+            // assume(port_dmem_hrdata == 0);
             
             assume(htif_pcr_req_valid == 0);
             assume(htif_pcr_req_rw == 0);
@@ -84,7 +99,7 @@
             if (Pinit == 0) begin
                 if (done[head_ptr]) begin
                     events[head_ptr] = `PIPELINE_WIDTH'b000;
-                    windows[tail_ptr] = next_pc;
+                    windows[tail_ptr] <= next_pc;
                     windows[head_ptr] = `XPR_LEN'd120;
                     case (next_pc)
                         12      : next_pc = 4;
@@ -162,6 +177,11 @@
             assert(windows[2] == 4 || windows[2] == 8 || windows[2] == 12 || windows[2] == 120);
             assert(windows[3] == 4 || windows[3] == 8 || windows[3] == 12 || windows[3] == 120);
 
+            assert(\ports_PC_WB[0] == 0 || \ports_PC_WB[0] == 4 || \ports_PC_WB[0] == 8 || \ports_PC_WB[0] == 12);
+            assert(\ports_PC_DX[0] == 0 || \ports_PC_DX[0] == 4 || \ports_PC_DX[0] == 8 || \ports_PC_DX[0] == 12);
+            assert(\ports_PC_IF[0] == 0 || \ports_PC_IF[0] == 4 || \ports_PC_IF[0] == 8 || \ports_PC_IF[0] == 12);
+
             assert(!(bad[0] || bad[1] || bad[2] || bad[3]));
+            assert(!(po_bad[0] || po_bad[1] || po_bad[2] || po_bad[3]));
         end
 `endif

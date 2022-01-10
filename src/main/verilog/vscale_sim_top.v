@@ -101,9 +101,9 @@ module vscale_sim_top(
 	assign	port_imem_hready 	= {`NUM_CORES{1'b1}};
 	assign	port_imem_hresp 	= {`NUM_CORES{`HASTI_RESP_WIDTH'd0}};
 	// Hardcode (unused) data inputs:
-	assign	port_dmem_hrdata 	= {`NUM_CORES{32'h0}};
-	assign	port_dmem_hready 	= {`NUM_CORES{1'b1}};
-	assign	port_dmem_hresp 	= {`NUM_CORES{`HASTI_RESP_WIDTH'd0}};
+	// assign	port_dmem_hrdata 	= {`NUM_CORES{32'h0}};
+	// assign	port_dmem_hready 	= {`NUM_CORES{1'b1}};
+	// assign	port_dmem_hresp 	= {`NUM_CORES{`HASTI_RESP_WIDTH'd0}};
 `endif
 
 	genvar i_flat;
@@ -225,7 +225,6 @@ module vscale_sim_top(
 	   	end
    	endgenerate
 
-`ifdef FROM_HEXFILE
    	vscale_arbiter arbiter(
 		.clk(clk),
 		.reset(reset),
@@ -281,6 +280,5 @@ module vscale_sim_top(
 		.p0_hresp(arbiter_dmem_hresp),
         .port_mem(port_mem)
 	);
-`endif
 
 endmodule // vscale_sim_top

@@ -9,15 +9,24 @@
         wire                done    [0:`PIPELINE_WIDTH-1];
         wire                bad     [0:`PIPELINE_WIDTH-1];      
 
+        wire                po_bad  [0:`PIPELINE_WIDTH-1];
+
         assign done[0]  = &events[0];
         assign done[1]  = &events[1];
         assign done[2]  = &events[2];
         assign done[3]  = &events[3];
 
+        // Fet-Dec-Exe axiom
         assign bad[0]   = events[0][2:2] && !(events[0][0:0] && events[0][1:1]);
         assign bad[1]   = events[1][2:2] && !(events[1][0:0] && events[1][1:1]);
         assign bad[2]   = events[2][2:2] && !(events[2][0:0] && events[2][1:1]);
         assign bad[3]   = events[3][2:2] && !(events[3][0:0] && events[3][1:1]);
+
+        // Program order fetch axiom
+        assign po_bad[0] = (!events[0][0:0] && events[1][0:0] && tail_ptr != 0);
+        assign po_bad[1] = (!events[1][0:0] && events[2][0:0] && tail_ptr != 1);
+        assign po_bad[2] = (!events[2][0:0] && events[3][0:0] && tail_ptr != 2);
+        assign po_bad[3] = (!events[3][0:0] && events[0][0:0] && tail_ptr != 3);
 
         reg [2:0]           counter;
         reg init;
@@ -58,8 +67,16 @@
                 assume the required opcode
                 info: no funct assumed, could be any ALU operation 
             */
-            assume(inp_port_imem_hrdata[6:0] == 7'b0010011);
-
+            // assume(inp_port_imem_hrdata == 32'd13);
+            // assume(inp_port_imem_hrdata[19:0] == 20'h00313);
+            // assume((inp_port_imem_hrdata[6:0] == 7'b0010011));
+             assume(inp_port_imem_hrdata[6:0] == 7'b0110011 && inp_port_imem_hrdata[31:25] == 7'd0);
+            // assume(inp_port_imem_hrdata[19:12] == 8'h00);
+            // assume(inp_port_imem_hrdata[11:7] == 6);
+            // assume(inp_port_imem_hrdata[19:12] == 8'h00 && inp_port_imem_hrdata[11:7] == 5'b00110 && inp_port_imem_hrdata[6:0] == 7'b0010011);
+            // assume(inp_port_imem_hrdata[19:12] == 8'h00);
+            // inp_port_imem_hrdata[11:7] = 5'b00110;
+            // assume(inp_port_imem_hrdata[6:0] == 7'b0010011);
             assume(htif_pcr_req_valid == 0);
             assume(htif_pcr_req_rw == 0);
             assume(htif_pcr_req_addr == 0);
@@ -74,7 +91,7 @@
             if (Pinit == 0) begin
                 if (done[head_ptr]) begin
                     events[head_ptr] = `PIPELINE_WIDTH'b000;
-                    windows[tail_ptr] = next_pc;
+                    windows[tail_ptr] <= next_pc;
                     windows[head_ptr] = `XPR_LEN'd120;
                     case (next_pc)
                         12      : next_pc = 4;
@@ -150,7 +167,15 @@
             assert(windows[1] == 4 || windows[1] == 8 || windows[1] == 12 || windows[1] == 120);
             assert(windows[2] == 4 || windows[2] == 8 || windows[2] == 12 || windows[2] == 120);
             assert(windows[3] == 4 || windows[3] == 8 || windows[3] == 12 || windows[3] == 120);
+
+
+            assert(\ports_PC_WB[0] == 0 || \ports_PC_WB[0] == 4 || \ports_PC_WB[0] == 8 || \ports_PC_WB[0] == 12);
+            assert(\ports_PC_DX[0] == 0 || \ports_PC_DX[0] == 4 || \ports_PC_DX[0] == 8 || \ports_PC_DX[0] == 12);
+            assert(\ports_PC_IF[0] == 0 || \ports_PC_IF[0] == 4 || \ports_PC_IF[0] == 8 || \ports_PC_IF[0] == 12);
             
+            // assert(events[0] == 0 || events[1] == 0 || events[2] == 0 || events[3] == 0);
+
             assert(!(bad[0] || bad[1] || bad[2] || bad[3]));
+            assert(!(po_bad[0] || po_bad[1] || po_bad[2] || po_bad[3]));
         end
 `endif

@@ -238,6 +238,12 @@ module vscale_pipeline(
 
     assign halted = !imem_wait && (imem_rdata == `RV32_HALT);
 
+    initial begin
+        tag_IF <= 0;
+        tag_DX <= 0;
+        tag_WB <= 0;
+    end
+
     always @(posedge clk) begin
         if (reset) begin
             PC_DX <= 0;
