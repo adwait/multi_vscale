@@ -1,0 +1,79 @@
+[*]
+[*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
+[*] Tue Jan 11 10:15:38 2022
+[*]
+[dumpfile] "\\wsl$\Ubuntu-18.04\home\adwait\Documents\vscale_bench\multi_vscale\sec-mem1\engine_0\trace.vcd"
+[savefile] "\\wsl$\Ubuntu-18.04\home\adwait\Documents\vscale_bench\multi_vscale\gtkwave\mvscale_mem.gtkw"
+[timestart] 0
+[size] 1920 1017
+[pos] -1 -1
+*-4.156073 11 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] vscale_sim_top.
+[treeopen] vscale_sim_top.core_gen_block<0>.
+[treeopen] vscale_sim_top.core_gen_block<0>.vscale.
+[treeopen] vscale_sim_top.core_gen_block<0>.vscale.pipeline.
+[treeopen] vscale_sim_top.core_gen_block<1>.
+[treeopen] vscale_sim_top.core_gen_block<1>.vscale.
+[sst_width] 197
+[signals_width] 230
+[sst_expanded] 1
+[sst_vpaned_height] 300
+@28
+vscale_sim_top.clk
+vscale_sim_top.reset
+@22
+vscale_sim_top.value_Read<0>[31:0]
+vscale_sim_top.value_Read<1>[31:0]
+vscale_sim_top.value_Read<2>[31:0]
+vscale_sim_top.value_Read<3>[31:0]
+vscale_sim_top.value_Read<4>[31:0]
+vscale_sim_top.value_Read<5>[31:0]
+vscale_sim_top.value_Read<6>[31:0]
+vscale_sim_top.value_Read<7>[31:0]
+vscale_sim_top.value_Write<0>[31:0]
+vscale_sim_top.value_Write<2>[31:0]
+vscale_sim_top.value_Write<3>[31:0]
+vscale_sim_top.value_Write<4>[31:0]
+vscale_sim_top.value_Write<5>[31:0]
+vscale_sim_top.value_Write<6>[31:0]
+vscale_sim_top.value_Write<7>[31:0]
+vscale_sim_top.istream_0<0>[31:0]
+vscale_sim_top.istream_0<1>[31:0]
+vscale_sim_top.istream_0<2>[31:0]
+vscale_sim_top.istream_0<3>[31:0]
+vscale_sim_top.istream_0<4>[31:0]
+vscale_sim_top.istream_1<0>[31:0]
+vscale_sim_top.istream_1<1>[31:0]
+vscale_sim_top.istream_1<2>[31:0]
+vscale_sim_top.istream_1<3>[31:0]
+vscale_sim_top.istream_1<4>[31:0]
+vscale_sim_top.bad<0>[7:0]
+vscale_sim_top.bad<1>[7:0]
+vscale_sim_top.bad<2>[7:0]
+vscale_sim_top.bad<3>[7:0]
+vscale_sim_top.bad<4>[7:0]
+vscale_sim_top.bad<5>[7:0]
+vscale_sim_top.bad<6>[7:0]
+vscale_sim_top.bad<7>[7:0]
+vscale_sim_top.core_gen_block<0>.vscale.pipeline.PC_WB[31:0]
+@28
+vscale_sim_top.i0_index[2:0]
+@22
+vscale_sim_top.arbiter_dmem_hrdata[31:0]
+@28
+vscale_sim_top.events<0>
+vscale_sim_top.events<1>
+vscale_sim_top.events<2>
+vscale_sim_top.events<3>
+@22
+vscale_sim_top.core_gen_block<1>.vscale.pipeline.PC_WB[31:0]
+@23
+vscale_sim_top.hasti_mem.mem<16>[31:0]
+@28
+vscale_sim_top.i1_index[2:0]
+vscale_sim_top.events<4>
+vscale_sim_top.events<5>
+vscale_sim_top.events<6>
+vscale_sim_top.events<7>
+[pattern_trace] 1
+[pattern_trace] 0

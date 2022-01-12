@@ -29,4 +29,4 @@ proc; opt; fsm; opt; memory; opt
 techmap; opt
 clean
 
-write_verilog -noattr mvscale_top_c2_nonmem.v
+write_verilog -noattr mvscale_top_c2_mem.v

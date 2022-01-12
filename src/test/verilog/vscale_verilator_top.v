@@ -1,10 +1,13 @@
 `include "vscale_ctrl_constants.vh"
 `include "vscale_csr_addr_map.vh"
+`include "vscale_multicore_constants.vh"
+`include "vscale_hasti_constants.vh"
 
 module vscale_verilator_top(
       input clk,
       input reset,
-      input arbiter_token                 
+      input arbiter_token,
+      input [`NUM_CORES*`HASTI_BUS_WIDTH-1:0] inp_port_imem_hrdata                
    );
 
    localparam hexfile_words = 8;
@@ -34,13 +37,16 @@ module vscale_verilator_top(
          .htif_pcr_resp_ready(1'b1),
          .htif_pcr_resp_data(htif_pcr_resp_data),
          //  info: hardset pin: should set this via Vtop in the future
-         .arbiter_next_core(arbiter_token)
+         .arbiter_next_core(arbiter_token),
+
+         .inp_port_imem_hrdata(inp_port_imem_hrdata)
       );
 
    integer i = 0;
    integer j = 0;
    integer tmp = 0;
    
+`ifdef FROM_HEXFILE
    initial begin
       loadmem = 0;
       reason = 0;
@@ -57,6 +63,7 @@ module vscale_verilator_top(
       end
       $display("\n");
    end // initial begin
+`endif
 
    always @(posedge clk) begin
       trace_count = trace_count + 1;

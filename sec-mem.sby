@@ -1,14 +1,14 @@
 [options]
-mode prove
+mode bmc
 depth 17
 
 [engines]
 smtbmc boolector
 
 [script]
-read -formal mvscale_top_c1-ind.v
+read -formal mvscale_top_c2_mem.v
 prep -top vscale_sim_top
 
 [files]
-mvscale_top_c1-ind.v
-formal-ind.v
+mvscale_top_c2_mem.v
+formal-mem.v

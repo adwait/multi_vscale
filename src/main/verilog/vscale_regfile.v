@@ -26,11 +26,20 @@ module vscale_regfile(
         end
     end
 
+
+
     `ifndef SYNTHESIS
     integer i;
     initial begin
         for (i = 0; i < 32; i = i + 1) begin
             data[i] = $random;
+        end
+    end
+    `else
+    integer i;
+    initial begin
+        for (i = 0; i < 32; i = i + 1) begin
+            data[i] = i;
         end
     end
     `endif

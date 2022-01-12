@@ -17,7 +17,8 @@ module vscale_sim_top(
 	input                        htif_pcr_resp_ready,
 	output [`HTIF_PCR_WIDTH-1:0] htif_pcr_resp_data,
 	// input
-	input [`CORE_IDX_WIDTH-1:0]  arbiter_next_core
+	input [`CORE_IDX_WIDTH-1:0]  arbiter_next_core,
+	input [`NUM_CORES*`HASTI_BUS_WIDTH-1:0]	inp_port_imem_hrdata
 	);
 
 	wire                                            resetn;
@@ -49,6 +50,17 @@ module vscale_sim_top(
 	wire                                            dmem_hready [0:`NUM_CORES-1];
 	wire [`HASTI_RESP_WIDTH-1:0]                    dmem_hresp [0:`NUM_CORES-1];
 
+	// info: dummy ports for indirection, not really used
+	wire [`HTIF_PCR_WIDTH-1:0] 	dummy_htif_pcr_resp_data [0:`NUM_CORES-1];
+	wire						dummy_htif_pcr_resp_valid [0:`NUM_CORES-1];
+	wire                       	dummy_htif_pcr_req_ready [0:`NUM_CORES-1];
+	wire						dummy_htif_ipi_req_valid [0:`NUM_CORES-1];
+	wire						dummy_htif_ipi_req_data [0:`NUM_CORES-1];
+	wire						dummy_htif_ipi_resp_ready [0:`NUM_CORES-1];
+	wire						dummy_htif_debug_stats_pcr [0:`NUM_CORES-1];
+	assign htif_pcr_req_ready = dummy_htif_pcr_req_ready[0];
+	assign htif_pcr_resp_data = dummy_htif_pcr_resp_data[0];
+	assign htif_pcr_resp_valid = dummy_htif_pcr_resp_valid[0];
 
 	// ************* Flattened ports for arbiter
 	// Signals between instruction memory and cores
@@ -76,6 +88,29 @@ module vscale_sim_top(
 	wire [`NUM_CORES*`HASTI_BUS_WIDTH-1:0]                     port_dmem_hrdata;
 	wire [`NUM_CORES-1:0]                                           port_dmem_hready;
 	wire [`NUM_CORES*`HASTI_RESP_WIDTH-1:0]                    port_dmem_hresp;
+
+ 	// for probes from memory
+	wire [`NUM_CORES*`HASTI_BUS_WIDTH-1:0]                     mem_port_imem_hrdata;
+	wire [`NUM_CORES-1:0]                                      mem_port_imem_hready;
+	wire [`NUM_CORES*`HASTI_RESP_WIDTH-1:0]                    mem_port_imem_hresp;
+
+`ifdef FROM_HEXFILE
+	assign	port_imem_hrdata 	= mem_port_imem_hrdata;
+	assign	port_imem_hready 	= mem_port_imem_hready;
+	assign	port_imem_hresp 	= mem_port_imem_hresp;
+	// ports are connected from memory/arbiter buses
+`else
+	// Hardcode instruction inputs:
+	// assign	port_imem_hrdata 	= {`NUM_CORES{32'h00230313}};
+	assign	port_imem_hrdata 	= inp_port_imem_hrdata;
+	assign	port_imem_hready 	= {`NUM_CORES{1'b1}};
+	assign	port_imem_hresp 	= {`NUM_CORES{`HASTI_RESP_WIDTH'd0}};
+	// Hardcode (unused) data inputs:
+	// assign	port_dmem_hrdata 	= {`NUM_CORES{32'h0}};
+	// assign	port_dmem_hready 	= {`NUM_CORES{1'b1}};
+	// assign	port_dmem_hresp 	= {`NUM_CORES{`HASTI_RESP_WIDTH'd0}};
+`endif
+
 
 	genvar i_flat;
     for (i_flat = 0; i_flat < `NUM_CORES; i_flat=i_flat+1) begin
@@ -175,20 +210,20 @@ module vscale_sim_top(
 			.htif_reset(htif_reset),
 			.htif_id(1'b0),
 			.htif_pcr_req_valid(htif_pcr_req_valid),
-			.htif_pcr_req_ready(htif_pcr_req_ready),
+			.htif_pcr_req_ready(dummy_htif_pcr_req_ready[i]),
 			.htif_pcr_req_rw(htif_pcr_req_rw),
 			.htif_pcr_req_addr(htif_pcr_req_addr),
 			.htif_pcr_req_data(htif_pcr_req_data),
-			.htif_pcr_resp_valid(htif_pcr_resp_valid),
+			.htif_pcr_resp_valid(dummy_htif_pcr_resp_valid[i]),
 			.htif_pcr_resp_ready(htif_pcr_resp_ready),
-			.htif_pcr_resp_data(htif_pcr_resp_data),
+			.htif_pcr_resp_data(dummy_htif_pcr_resp_data[i]),
 			.htif_ipi_req_ready(htif_ipi_req_ready),
-			.htif_ipi_req_valid(htif_ipi_req_valid),
-			.htif_ipi_req_data(htif_ipi_req_data),
-			.htif_ipi_resp_ready(htif_ipi_resp_ready),
+			.htif_ipi_req_valid(dummy_htif_ipi_req_valid[i]),
+			.htif_ipi_req_data(dummy_htif_ipi_req_data[i]),
+			.htif_ipi_resp_ready(dummy_htif_ipi_resp_ready[i]),
 			.htif_ipi_resp_valid(htif_ipi_resp_valid),
 			.htif_ipi_resp_data(htif_ipi_resp_data),
-			.htif_debug_stats_pcr(htif_debug_stats_pcr),
+			.htif_debug_stats_pcr(dummy_htif_debug_stats_pcr[i]),
             .port_PC_IF(ports_PC_IF[i]),
             .port_PC_DX(ports_PC_DX[i]),
             .port_PC_WB(ports_PC_WB[i])
@@ -235,9 +270,9 @@ module vscale_sim_top(
 		.p1_hprot(port_imem_hprot),
 		.p1_htrans(port_imem_htrans),
 		.p1_hwdata(port_imem_hwdata),
-		.p1_hrdata(port_imem_hrdata),
-		.p1_hready(port_imem_hready),
-		.p1_hresp(port_imem_hresp),
+		.p1_hrdata(mem_port_imem_hrdata),
+		.p1_hready(mem_port_imem_hready),
+		.p1_hresp(mem_port_imem_hresp),
 		.p0_haddr(arbiter_dmem_haddr),
 		.p0_hwrite(arbiter_dmem_hwrite),
 		.p0_hsize(arbiter_dmem_hsize),
@@ -251,5 +286,7 @@ module vscale_sim_top(
 		.p0_hresp(arbiter_dmem_hresp),
         .port_mem(port_mem)
 	);
+
+	// `include "formal-mem.v"
 
 endmodule // vscale_sim_top

@@ -1,0 +1,53 @@
+[*]
+[*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
+[*] Tue Jan 04 03:12:22 2022
+[*]
+[dumpfile] "\\wsl$\Ubuntu-18.04\home\adwait\Documents\vscale_bench\multi_vscale\output\multicore-4-verilator.vcd"
+[dumpfile_mtime] "Tue Jan 04 03:04:05 2022"
+[dumpfile_size] 166720
+[savefile] "\\wsl$\Ubuntu-18.04\home\adwait\Documents\vscale_bench\multi_vscale\gtkwave\c2_rrrr_wrrr.gtkw"
+[timestart] 0
+[size] 1920 1017
+[pos] -1 -1
+*-13.000000 14000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.vscale_verilator_top.
+[treeopen] TOP.vscale_verilator_top.DUT.
+[treeopen] TOP.vscale_verilator_top.DUT.core_gen_block(0).
+[treeopen] TOP.vscale_verilator_top.DUT.core_gen_block(0).vscale.
+[treeopen] TOP.vscale_verilator_top.DUT.core_gen_block(1).
+[treeopen] TOP.vscale_verilator_top.DUT.core_gen_block(1).vscale.
+[treeopen] TOP.vscale_verilator_top.DUT.core_gen_block(1).vscale.pipeline.
+[sst_width] 315
+[signals_width] 190
+[sst_expanded] 1
+[sst_vpaned_height] 289
+@28
+TOP.clk
+TOP.reset
+TOP.arbiter_token
+TOP.vscale_verilator_top.DUT.core_gen_block(0).vscale.core_id[0]
+@22
+TOP.vscale_verilator_top.DUT.imem_hrdata(0)[31:0]
+TOP.vscale_verilator_top.DUT.core_gen_block(0).vscale.pipeline.PC_PIF[31:0]
+TOP.vscale_verilator_top.DUT.core_gen_block(0).vscale.pipeline.PC_IF[31:0]
+@23
+TOP.vscale_verilator_top.DUT.core_gen_block(1).vscale.pipeline.inst_DX[31:0]
+@22
+TOP.vscale_verilator_top.DUT.core_gen_block(0).vscale.pipeline.PC_DX[31:0]
+TOP.vscale_verilator_top.DUT.core_gen_block(0).vscale.pipeline.PC_WB[31:0]
+TOP.vscale_verilator_top.DUT.core_gen_block(0).vscale.pipeline.regfile.data(5)[31:0]
+TOP.vscale_verilator_top.DUT.core_gen_block(0).vscale.pipeline.regfile.data(6)[31:0]
+@28
+TOP.vscale_verilator_top.DUT.core_gen_block(1).vscale.core_id[0]
+@22
+TOP.vscale_verilator_top.DUT.imem_hrdata(1)[31:0]
+TOP.vscale_verilator_top.DUT.core_gen_block(1).vscale.pipeline.PC_PIF[31:0]
+TOP.vscale_verilator_top.DUT.core_gen_block(1).vscale.pipeline.PC_IF[31:0]
+TOP.vscale_verilator_top.DUT.core_gen_block(0).vscale.pipeline.inst_DX[31:0]
+TOP.vscale_verilator_top.DUT.core_gen_block(1).vscale.pipeline.PC_DX[31:0]
+TOP.vscale_verilator_top.DUT.core_gen_block(1).vscale.pipeline.PC_WB[31:0]
+TOP.vscale_verilator_top.DUT.core_gen_block(1).vscale.pipeline.regfile.data(5)[31:0]
+TOP.vscale_verilator_top.DUT.core_gen_block(1).vscale.pipeline.regfile.data(6)[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

@@ -63,6 +63,8 @@ vscale_sim_top.v \
 vscale_dp_hasti_sram.v \
 )
 
+FORMAL_SRC = formal-mem.v
+
 # $(addprefix $(V_TEST_DIR)/, \
 # vscale_sim_top.v \
 # vscale_dp_hasti_sram.v \
@@ -108,7 +110,7 @@ $(SIM_DIR)/simv: $(VCS_TOP) $(SIM_SRCS) $(DESIGN_SRCS) $(HDRS)
 	mkdir -p sim
 	$(VCS) $(VCS_OPTS) -o $@ $(VCS_TOP) $(SIM_SRCS) $(DESIGN_SRCS)
 
-$(SIM_DIR)/Vvscale_verilator_top: $(VERILATOR_TOP) $(SIM_SRCS) $(DESIGN_SRCS) $(HDRS) $(VERILATOR_CPP_TB)
+$(SIM_DIR)/Vvscale_verilator_top: $(VERILATOR_TOP) $(SIM_SRCS) $(DESIGN_SRCS) $(HDRS) $(VERILATOR_CPP_TB) $(FORMAL_SRC)
 	$(VERILATOR) $(VERILATOR_OPTS) $(VERILATOR_TOP) $(SIM_SRCS) $(DESIGN_SRCS) --exe ../$(VERILATOR_CPP_TB)
 	cd sim; make $(VERILATOR_MAKE_OPTS) -f Vvscale_verilator_top.mk Vvscale_verilator_top__ALL.a
 	cd sim; make $(VERILATOR_MAKE_OPTS) -f Vvscale_verilator_top.mk Vvscale_verilator_top
