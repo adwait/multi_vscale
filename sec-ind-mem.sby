@@ -10,4 +10,4 @@ prep -top vscale_sim_top
 
 [files]
 mvscale_top_c1_mem.v
-formal-mem.v
+formal-mem-new1.v

@@ -33,7 +33,8 @@ module vscale_pipeline(
          // outputs for the events
         output [`XPR_LEN-1:0]   port_PC_IF,
         output [`XPR_LEN-1:0]   port_PC_DX,
-        output [`XPR_LEN-1:0]   port_PC_WB
+        output [`XPR_LEN-1:0]   port_PC_WB,
+        output [`PC_SRC_SEL_WIDTH-1:0] port_PC_src_sel
     );
 
     function [`XPR_LEN-1:0] store_data;
@@ -149,6 +150,7 @@ module vscale_pipeline(
     assign port_PC_IF = tag_IF;
     assign port_PC_DX = tag_DX;
     assign port_PC_WB = tag_WB;
+    assign port_PC_src_sel = PC_src_sel;
 
     wire [`XPR_LEN-1:0] tag_PIF;
     reg [`XPR_LEN-1:0]  tag_IF;

@@ -64,19 +64,25 @@
         always @(posedge clk) begin
 
             /* ALU operations 
-                assume the required opcode
+                Assume the required opcode
                 info: no funct assumed, could be any ALU operation 
             */
+            
+            /********************************
+            //  INFO: Assume different degrees of symbolicity
+            ********************************/
+            assume(inp_port_imem_hrdata[6:0] == 7'b0110011 && inp_port_imem_hrdata[31:25] == 7'd0);
             // assume(inp_port_imem_hrdata == 32'd13);
             // assume(inp_port_imem_hrdata[19:0] == 20'h00313);
             // assume((inp_port_imem_hrdata[6:0] == 7'b0010011));
-             assume(inp_port_imem_hrdata[6:0] == 7'b0110011 && inp_port_imem_hrdata[31:25] == 7'd0);
             // assume(inp_port_imem_hrdata[19:12] == 8'h00);
             // assume(inp_port_imem_hrdata[11:7] == 6);
             // assume(inp_port_imem_hrdata[19:12] == 8'h00 && inp_port_imem_hrdata[11:7] == 5'b00110 && inp_port_imem_hrdata[6:0] == 7'b0010011);
             // assume(inp_port_imem_hrdata[19:12] == 8'h00);
             // inp_port_imem_hrdata[11:7] = 5'b00110;
             // assume(inp_port_imem_hrdata[6:0] == 7'b0010011);
+            
+            
             assume(htif_pcr_req_valid == 0);
             assume(htif_pcr_req_rw == 0);
             assume(htif_pcr_req_addr == 0);
@@ -168,12 +174,9 @@
             assert(windows[2] == 4 || windows[2] == 8 || windows[2] == 12 || windows[2] == 120);
             assert(windows[3] == 4 || windows[3] == 8 || windows[3] == 12 || windows[3] == 120);
 
-
             assert(\ports_PC_WB[0] == 0 || \ports_PC_WB[0] == 4 || \ports_PC_WB[0] == 8 || \ports_PC_WB[0] == 12);
             assert(\ports_PC_DX[0] == 0 || \ports_PC_DX[0] == 4 || \ports_PC_DX[0] == 8 || \ports_PC_DX[0] == 12);
             assert(\ports_PC_IF[0] == 0 || \ports_PC_IF[0] == 4 || \ports_PC_IF[0] == 8 || \ports_PC_IF[0] == 12);
-            
-            // assert(events[0] == 0 || events[1] == 0 || events[2] == 0 || events[3] == 0);
 
             assert(!(bad[0] || bad[1] || bad[2] || bad[3]));
             assert(!(po_bad[0] || po_bad[1] || po_bad[2] || po_bad[3]));

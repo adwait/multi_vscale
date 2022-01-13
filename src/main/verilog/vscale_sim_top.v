@@ -142,9 +142,10 @@ module vscale_sim_top(
     wire [`MEM_WORDS*`HASTI_BUS_WIDTH-1:0] port_mem;
     // *************
 
-    wire [`XPR_LEN-1:0]  ports_PC_IF [`NUM_CORES-1:0];
-    wire [`XPR_LEN-1:0]  ports_PC_DX [`NUM_CORES-1:0];
-    wire [`XPR_LEN-1:0]  ports_PC_WB [`NUM_CORES-1:0];
+    wire [`XPR_LEN-1:0]  			ports_PC_IF [`NUM_CORES-1:0];
+    wire [`XPR_LEN-1:0]  			ports_PC_DX [`NUM_CORES-1:0];
+    wire [`XPR_LEN-1:0]  			ports_PC_WB [`NUM_CORES-1:0];
+	wire [`PC_SRC_SEL_WIDTH-1:0] 	port_PC_src_sel [`NUM_CORES-1:0];
 
 
 	//Signals between arbiter and data memory
@@ -220,7 +221,8 @@ module vscale_sim_top(
 			.htif_debug_stats_pcr(htif_debug_stats_pcr),
             .port_PC_IF(ports_PC_IF[i]),
             .port_PC_DX(ports_PC_DX[i]),
-            .port_PC_WB(ports_PC_WB[i])
+            .port_PC_WB(ports_PC_WB[i]),
+			.port_PC_src_sel(port_PC_src_sel[i])
 		);
 	   	end
    	endgenerate

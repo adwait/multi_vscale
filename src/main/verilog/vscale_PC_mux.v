@@ -57,7 +57,7 @@ module vscale_PC_mux(
 
 	assign PC_PIF = base + offset;
 	// assign PC_PIF = (PC_IF == 32'd12) ? 32'd4 : (base + offset);
-	assign tag_PIF = (tag_IF == 32'd12) ? 32'd4 : (tag_IF + offset);
+	assign tag_PIF = (tag_IF == 32'd20) ? 32'd4 : (tag_IF + offset);
 
 
 endmodule // vscale_PC_mux

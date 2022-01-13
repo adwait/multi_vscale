@@ -16,6 +16,7 @@
         assign done[2]  = &events[2];
         assign done[3]  = &events[3];
 
+        // Fet-Dec-Exe axiom
         assign bad[0]   = events[0][2:2] && !(events[0][0:0] && events[0][1:1]);
         assign bad[1]   = events[1][2:2] && !(events[1][0:0] && events[1][1:1]);
         assign bad[2]   = events[2][2:2] && !(events[2][0:0] && events[2][1:1]);
@@ -59,32 +60,26 @@
             end
         end
 
-        // (* anyconst *) reg [`XPR_LEN-1:0] instruction;
-
 `ifdef FORMAL
         always @(posedge clk) begin
 
             /* Memory operations 
-                info: no funct assumed, could be any ALU operation 
+                Assume the required opcode
+                info: no address assumed, could be any mem operation
             */
+            /********************************
+            //  INFO: Assume different degrees of symbolicity
+            ********************************/
+            assume(inp_port_imem_hrdata[6:0] == 7'h23 || inp_port_imem_hrdata[6:0] == 7'h03);
             // assume(inp_port_imem_hrdata == instruction);
             // assume(inp_port_imem_hrdata[19:12] == 0);
-            assume(inp_port_imem_hrdata[6:0] == 7'h23 || inp_port_imem_hrdata[6:0] == 7'h03);
             // assume(instruction[11:7] == 5'd8);
             // assume(instruction[31:24] == 0);
-            
             // inp_port_imem_hrdata[31:20] = 0;
             // inp_port_imem_hrdata[19:12] = 0;
             // inp_port_imem_hrdata[11:7] = 5'd8;
             // inp_port_imem_hrdata[6:0] = 7'd3;
-            
-            
-
-            // assume(port_dmem_hready == 1);
-            // assume(port_mem == 0);
-            // assume(port_dmem_hresp == 0);
-            // assume(port_dmem_hrdata == 0);
-            
+                        
             assume(htif_pcr_req_valid == 0);
             assume(htif_pcr_req_rw == 0);
             assume(htif_pcr_req_addr == 0);
@@ -168,7 +163,6 @@
                 assume(reset);
             end else begin
                 assume(!reset);
-                // assert(port_dmem_hready == 1);
             end
 
             // Inductiveness constraints

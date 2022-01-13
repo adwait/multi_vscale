@@ -298,13 +298,13 @@ module vscale_PC_mux(PC_src_sel, inst_DX, rs1_data, PC_IF, PC_DX, handler_PC, ep
   input [31:0] tag_IF;
   output [31:0] tag_PIF;
   assign _0000_ = ~tag_IF[2];
-  assign _0001_ = ~tag_IF[3];
+  assign _0001_ = ~tag_IF[4];
   assign _0002_ = ~PC_src_sel[2];
   assign _0004_ = ~PC_src_sel[0];
   assign _0003_ = ~PC_src_sel[1];
   assign _0005_[0] = tag_IF[0] | tag_IF[1];
-  assign _0005_[1] = _0000_ | _0001_;
-  assign _0005_[2] = tag_IF[4] | tag_IF[5];
+  assign _0005_[1] = _0000_ | tag_IF[3];
+  assign _0005_[2] = _0001_ | tag_IF[5];
   assign _0005_[3] = tag_IF[6] | tag_IF[7];
   assign _0005_[4] = tag_IF[8] | tag_IF[9];
   assign _0005_[5] = tag_IF[10] | tag_IF[11];
@@ -3328,7 +3328,7 @@ module vscale_arbiter(clk, reset, core_haddr, core_hwrite, core_hsize, core_hbur
   assign \local_core_hwrite[0]  = core_hwrite;
 endmodule
 
-module vscale_core(clk, core_id, imem_haddr, imem_hwrite, imem_hsize, imem_hburst, imem_hmastlock, imem_hprot, imem_htrans, imem_hwdata, imem_hrdata, imem_hready, imem_hresp, dmem_haddr, dmem_hwrite, dmem_hsize, dmem_hburst, dmem_hmastlock, dmem_hprot, dmem_htrans, dmem_hwdata, dmem_hrdata, dmem_hready, dmem_hresp, htif_reset, htif_id, htif_pcr_req_valid, htif_pcr_req_ready, htif_pcr_req_rw, htif_pcr_req_addr, htif_pcr_req_data, htif_pcr_resp_valid, htif_pcr_resp_ready, htif_pcr_resp_data, htif_ipi_req_ready, htif_ipi_req_valid, htif_ipi_req_data, htif_ipi_resp_ready, htif_ipi_resp_valid, htif_ipi_resp_data, htif_debug_stats_pcr, port_PC_IF, port_PC_DX, port_PC_WB);
+module vscale_core(clk, core_id, imem_haddr, imem_hwrite, imem_hsize, imem_hburst, imem_hmastlock, imem_hprot, imem_htrans, imem_hwdata, imem_hrdata, imem_hready, imem_hresp, dmem_haddr, dmem_hwrite, dmem_hsize, dmem_hburst, dmem_hmastlock, dmem_hprot, dmem_htrans, dmem_hwdata, dmem_hrdata, dmem_hready, dmem_hresp, htif_reset, htif_id, htif_pcr_req_valid, htif_pcr_req_ready, htif_pcr_req_rw, htif_pcr_req_addr, htif_pcr_req_data, htif_pcr_resp_valid, htif_pcr_resp_ready, htif_pcr_resp_data, htif_ipi_req_ready, htif_ipi_req_valid, htif_ipi_req_data, htif_ipi_resp_ready, htif_ipi_resp_valid, htif_ipi_resp_data, htif_debug_stats_pcr, port_PC_IF, port_PC_DX, port_PC_WB, port_PC_src_sel);
   input clk;
   input core_id;
   wire [31:0] dmem_addr;
@@ -3385,6 +3385,7 @@ module vscale_core(clk, core_id, imem_haddr, imem_hwrite, imem_hsize, imem_hburs
   output [31:0] port_PC_DX;
   output [31:0] port_PC_IF;
   output [31:0] port_PC_WB;
+  output [2:0] port_PC_src_sel;
   vscale_hasti_bridge dmem_bridge (
     .core_badmem_e(dmem_badmem_e),
     .core_mem_addr(dmem_addr),
@@ -3454,6 +3455,7 @@ module vscale_core(clk, core_id, imem_haddr, imem_hwrite, imem_hsize, imem_hburs
     .port_PC_DX(port_PC_DX),
     .port_PC_IF(port_PC_IF),
     .port_PC_WB(port_PC_WB),
+    .port_PC_src_sel(port_PC_src_sel),
     .reset(htif_reset)
   );
   assign htif_debug_stats_pcr = 1'h0;
@@ -20908,7 +20910,7 @@ module vscale_mul_div(clk, reset, req_valid, req_ready, req_in_1_signed, req_in_
   assign result_muxed_negated[0] = result_muxed[0];
 endmodule
 
-module vscale_pipeline(clk, core_id, reset, imem_wait, imem_addr, imem_rdata, imem_badmem_e, dmem_wait, dmem_en, dmem_wen, dmem_size, dmem_addr, dmem_wdata_delayed, dmem_rdata, dmem_badmem_e, htif_reset, htif_pcr_req_valid, htif_pcr_req_ready, htif_pcr_req_rw, htif_pcr_req_addr, htif_pcr_req_data, htif_pcr_resp_valid, htif_pcr_resp_ready, htif_pcr_resp_data, port_PC_IF, port_PC_DX, port_PC_WB);
+module vscale_pipeline(clk, core_id, reset, imem_wait, imem_addr, imem_rdata, imem_badmem_e, dmem_wait, dmem_en, dmem_wen, dmem_size, dmem_addr, dmem_wdata_delayed, dmem_rdata, dmem_badmem_e, htif_reset, htif_pcr_req_valid, htif_pcr_req_ready, htif_pcr_req_rw, htif_pcr_req_addr, htif_pcr_req_data, htif_pcr_resp_valid, htif_pcr_resp_ready, htif_pcr_resp_data, port_PC_IF, port_PC_DX, port_PC_WB, port_PC_src_sel);
   wire [31:0] _0000_;
   wire _0001_;
   wire _0002_;
@@ -21067,13 +21069,13 @@ module vscale_pipeline(clk, core_id, reset, imem_wait, imem_addr, imem_rdata, im
   wire kill_DX;
   wire kill_IF;
   wire kill_WB;
-  wire [31:0] \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result ;
-  wire [31:0] \load_data$func$src/main/verilog/vscale_pipeline.v:379$410.addr ;
-  wire [31:0] \load_data$func$src/main/verilog/vscale_pipeline.v:379$410.b_extend ;
-  wire [31:0] \load_data$func$src/main/verilog/vscale_pipeline.v:379$410.data ;
-  wire [31:0] \load_data$func$src/main/verilog/vscale_pipeline.v:379$410.h_extend ;
-  wire [2:0] \load_data$func$src/main/verilog/vscale_pipeline.v:379$410.mem_type ;
-  wire [31:0] \load_data$func$src/main/verilog/vscale_pipeline.v:379$410.shifted_data ;
+  wire [31:0] \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result ;
+  wire [31:0] \load_data$func$src/main/verilog/vscale_pipeline.v:381$410.addr ;
+  wire [31:0] \load_data$func$src/main/verilog/vscale_pipeline.v:381$410.b_extend ;
+  wire [31:0] \load_data$func$src/main/verilog/vscale_pipeline.v:381$410.data ;
+  wire [31:0] \load_data$func$src/main/verilog/vscale_pipeline.v:381$410.h_extend ;
+  wire [2:0] \load_data$func$src/main/verilog/vscale_pipeline.v:381$410.mem_type ;
+  wire [31:0] \load_data$func$src/main/verilog/vscale_pipeline.v:381$410.shifted_data ;
   wire [31:0] load_data_WB;
   wire md_req_in_1_signed;
   wire md_req_in_2_signed;
@@ -21086,6 +21088,7 @@ module vscale_pipeline(clk, core_id, reset, imem_wait, imem_addr, imem_rdata, im
   output [31:0] port_PC_DX;
   output [31:0] port_PC_IF;
   output [31:0] port_PC_WB;
+  output [2:0] port_PC_src_sel;
   wire [1:0] prv;
   wire [4:0] reg_to_wr_WB;
   input reset;
@@ -21101,9 +21104,9 @@ module vscale_pipeline(clk, core_id, reset, imem_wait, imem_addr, imem_rdata, im
   wire stall_DX;
   wire stall_IF;
   wire stall_WB;
-  wire [31:0] \store_data$func$src/main/verilog/vscale_pipeline.v:392$411.addr ;
-  wire [31:0] \store_data$func$src/main/verilog/vscale_pipeline.v:392$411.data ;
-  wire [2:0] \store_data$func$src/main/verilog/vscale_pipeline.v:392$411.mem_type ;
+  wire [31:0] \store_data$func$src/main/verilog/vscale_pipeline.v:394$411.addr ;
+  wire [31:0] \store_data$func$src/main/verilog/vscale_pipeline.v:394$411.data ;
+  wire [2:0] \store_data$func$src/main/verilog/vscale_pipeline.v:394$411.mem_type ;
   reg [31:0] store_data_WB;
   reg [31:0] tag_DX = 32'd0;
   reg [31:0] tag_IF = 32'd0;
@@ -21732,38 +21735,38 @@ module vscale_pipeline(clk, core_id, reset, imem_wait, imem_addr, imem_rdata, im
   assign dmem_wdata_delayed[29] = _0064_[1] ? _0079_[29] : store_data_WB[29];
   assign dmem_wdata_delayed[30] = _0064_[1] ? _0079_[30] : store_data_WB[30];
   assign dmem_wdata_delayed[31] = _0064_[1] ? _0079_[31] : store_data_WB[31];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [0] = _0097_ ? _0083_[0] : _0080_[0];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [1] = _0097_ ? _0083_[1] : _0080_[1];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [2] = _0097_ ? _0083_[2] : _0080_[2];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [3] = _0097_ ? _0083_[3] : _0080_[3];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [4] = _0097_ ? _0083_[4] : _0080_[4];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [5] = _0097_ ? _0083_[5] : _0080_[5];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [6] = _0097_ ? _0083_[6] : _0080_[6];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [7] = _0097_ ? _0083_[7] : _0080_[7];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [8] = _0097_ ? _0083_[8] : _0080_[8];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [9] = _0097_ ? _0083_[9] : _0080_[9];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [10] = _0097_ ? _0083_[10] : _0080_[10];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [11] = _0097_ ? _0083_[11] : _0080_[11];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [12] = _0097_ ? _0083_[12] : _0080_[12];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [13] = _0097_ ? _0083_[13] : _0080_[13];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [14] = _0097_ ? _0083_[14] : _0080_[14];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [15] = _0097_ ? _0083_[15] : _0080_[15];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [16] = _0097_ ? _0083_[31] : _0080_[16];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [17] = _0097_ ? _0083_[31] : _0080_[17];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [18] = _0097_ ? _0083_[31] : _0080_[18];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [19] = _0097_ ? _0083_[31] : _0080_[19];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [20] = _0097_ ? _0083_[31] : _0080_[20];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [21] = _0097_ ? _0083_[31] : _0080_[21];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [22] = _0097_ ? _0083_[31] : _0080_[22];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [23] = _0097_ ? _0083_[31] : _0080_[23];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [24] = _0097_ ? _0083_[31] : _0080_[24];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [25] = _0097_ ? _0083_[31] : _0080_[25];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [26] = _0097_ ? _0083_[31] : _0080_[26];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [27] = _0097_ ? _0083_[31] : _0080_[27];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [28] = _0097_ ? _0083_[31] : _0080_[28];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [29] = _0097_ ? _0083_[31] : _0080_[29];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [30] = _0097_ ? _0083_[31] : _0080_[30];
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [31] = _0097_ ? _0083_[31] : _0080_[31];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [0] = _0097_ ? _0083_[0] : _0080_[0];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [1] = _0097_ ? _0083_[1] : _0080_[1];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [2] = _0097_ ? _0083_[2] : _0080_[2];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [3] = _0097_ ? _0083_[3] : _0080_[3];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [4] = _0097_ ? _0083_[4] : _0080_[4];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [5] = _0097_ ? _0083_[5] : _0080_[5];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [6] = _0097_ ? _0083_[6] : _0080_[6];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [7] = _0097_ ? _0083_[7] : _0080_[7];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [8] = _0097_ ? _0083_[8] : _0080_[8];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [9] = _0097_ ? _0083_[9] : _0080_[9];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [10] = _0097_ ? _0083_[10] : _0080_[10];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [11] = _0097_ ? _0083_[11] : _0080_[11];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [12] = _0097_ ? _0083_[12] : _0080_[12];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [13] = _0097_ ? _0083_[13] : _0080_[13];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [14] = _0097_ ? _0083_[14] : _0080_[14];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [15] = _0097_ ? _0083_[15] : _0080_[15];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [16] = _0097_ ? _0083_[31] : _0080_[16];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [17] = _0097_ ? _0083_[31] : _0080_[17];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [18] = _0097_ ? _0083_[31] : _0080_[18];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [19] = _0097_ ? _0083_[31] : _0080_[19];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [20] = _0097_ ? _0083_[31] : _0080_[20];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [21] = _0097_ ? _0083_[31] : _0080_[21];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [22] = _0097_ ? _0083_[31] : _0080_[22];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [23] = _0097_ ? _0083_[31] : _0080_[23];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [24] = _0097_ ? _0083_[31] : _0080_[24];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [25] = _0097_ ? _0083_[31] : _0080_[25];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [26] = _0097_ ? _0083_[31] : _0080_[26];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [27] = _0097_ ? _0083_[31] : _0080_[27];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [28] = _0097_ ? _0083_[31] : _0080_[28];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [29] = _0097_ ? _0083_[31] : _0080_[29];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [30] = _0097_ ? _0083_[31] : _0080_[30];
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [31] = _0097_ ? _0083_[31] : _0080_[31];
   assign bypass_data_WB[0] = _0047_ ? _0090_[0] : alu_out_WB[0];
   assign bypass_data_WB[1] = _0047_ ? _0090_[1] : alu_out_WB[1];
   assign bypass_data_WB[2] = _0047_ ? _0090_[2] : alu_out_WB[2];
@@ -22720,38 +22723,38 @@ module vscale_pipeline(clk, core_id, reset, imem_wait, imem_addr, imem_rdata, im
   assign _0084_[29] = bypass_data_WB[29] & _0085_[0];
   assign _0084_[30] = bypass_data_WB[30] & _0085_[0];
   assign _0084_[31] = bypass_data_WB[31] & _0085_[0];
-  assign _0084_[32] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [0] & _0085_[1];
-  assign _0084_[33] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [1] & _0085_[1];
-  assign _0084_[34] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [2] & _0085_[1];
-  assign _0084_[35] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [3] & _0085_[1];
-  assign _0084_[36] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [4] & _0085_[1];
-  assign _0084_[37] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [5] & _0085_[1];
-  assign _0084_[38] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [6] & _0085_[1];
-  assign _0084_[39] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [7] & _0085_[1];
-  assign _0084_[40] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [8] & _0085_[1];
-  assign _0084_[41] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [9] & _0085_[1];
-  assign _0084_[42] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [10] & _0085_[1];
-  assign _0084_[43] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [11] & _0085_[1];
-  assign _0084_[44] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [12] & _0085_[1];
-  assign _0084_[45] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [13] & _0085_[1];
-  assign _0084_[46] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [14] & _0085_[1];
-  assign _0084_[47] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [15] & _0085_[1];
-  assign _0084_[48] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [16] & _0085_[1];
-  assign _0084_[49] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [17] & _0085_[1];
-  assign _0084_[50] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [18] & _0085_[1];
-  assign _0084_[51] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [19] & _0085_[1];
-  assign _0084_[52] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [20] & _0085_[1];
-  assign _0084_[53] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [21] & _0085_[1];
-  assign _0084_[54] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [22] & _0085_[1];
-  assign _0084_[55] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [23] & _0085_[1];
-  assign _0084_[56] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [24] & _0085_[1];
-  assign _0084_[57] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [25] & _0085_[1];
-  assign _0084_[58] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [26] & _0085_[1];
-  assign _0084_[59] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [27] & _0085_[1];
-  assign _0084_[60] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [28] & _0085_[1];
-  assign _0084_[61] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [29] & _0085_[1];
-  assign _0084_[62] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [30] & _0085_[1];
-  assign _0084_[63] = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result [31] & _0085_[1];
+  assign _0084_[32] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [0] & _0085_[1];
+  assign _0084_[33] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [1] & _0085_[1];
+  assign _0084_[34] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [2] & _0085_[1];
+  assign _0084_[35] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [3] & _0085_[1];
+  assign _0084_[36] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [4] & _0085_[1];
+  assign _0084_[37] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [5] & _0085_[1];
+  assign _0084_[38] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [6] & _0085_[1];
+  assign _0084_[39] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [7] & _0085_[1];
+  assign _0084_[40] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [8] & _0085_[1];
+  assign _0084_[41] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [9] & _0085_[1];
+  assign _0084_[42] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [10] & _0085_[1];
+  assign _0084_[43] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [11] & _0085_[1];
+  assign _0084_[44] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [12] & _0085_[1];
+  assign _0084_[45] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [13] & _0085_[1];
+  assign _0084_[46] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [14] & _0085_[1];
+  assign _0084_[47] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [15] & _0085_[1];
+  assign _0084_[48] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [16] & _0085_[1];
+  assign _0084_[49] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [17] & _0085_[1];
+  assign _0084_[50] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [18] & _0085_[1];
+  assign _0084_[51] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [19] & _0085_[1];
+  assign _0084_[52] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [20] & _0085_[1];
+  assign _0084_[53] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [21] & _0085_[1];
+  assign _0084_[54] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [22] & _0085_[1];
+  assign _0084_[55] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [23] & _0085_[1];
+  assign _0084_[56] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [24] & _0085_[1];
+  assign _0084_[57] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [25] & _0085_[1];
+  assign _0084_[58] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [26] & _0085_[1];
+  assign _0084_[59] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [27] & _0085_[1];
+  assign _0084_[60] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [28] & _0085_[1];
+  assign _0084_[61] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [29] & _0085_[1];
+  assign _0084_[62] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [30] & _0085_[1];
+  assign _0084_[63] = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result [31] & _0085_[1];
   assign _0080_[0] = alu_out_WB[1] ? _0099_[16] : _0099_[0];
   assign _0080_[1] = alu_out_WB[1] ? _0099_[17] : _0099_[1];
   assign _0080_[2] = alu_out_WB[1] ? _0099_[18] : _0099_[2];
@@ -22965,21 +22968,22 @@ module vscale_pipeline(clk, core_id, reset, imem_wait, imem_addr, imem_rdata, im
   assign csr_addr = inst_DX[31:20];
   assign dmem_addr = alu_out;
   assign imem_addr = PC_PIF;
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$410.addr  = 32'hxxxxxxxx;
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$410.b_extend  = 32'hxxxxxxxx;
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$410.data  = 32'hxxxxxxxx;
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$410.h_extend  = 32'hxxxxxxxx;
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$410.mem_type  = 3'hx;
-  assign \load_data$func$src/main/verilog/vscale_pipeline.v:379$410.shifted_data  = 32'hxxxxxxxx;
-  assign load_data_WB = \load_data$func$src/main/verilog/vscale_pipeline.v:379$408.$result ;
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$410.addr  = 32'hxxxxxxxx;
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$410.b_extend  = 32'hxxxxxxxx;
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$410.data  = 32'hxxxxxxxx;
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$410.h_extend  = 32'hxxxxxxxx;
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$410.mem_type  = 3'hx;
+  assign \load_data$func$src/main/verilog/vscale_pipeline.v:381$410.shifted_data  = 32'hxxxxxxxx;
+  assign load_data_WB = \load_data$func$src/main/verilog/vscale_pipeline.v:381$408.$result ;
   assign port_PC_DX = tag_DX;
   assign port_PC_IF = tag_IF;
   assign port_PC_WB = tag_WB;
+  assign port_PC_src_sel = PC_src_sel;
   assign rs1_addr = inst_DX[19:15];
   assign rs2_addr = inst_DX[24:20];
-  assign \store_data$func$src/main/verilog/vscale_pipeline.v:392$411.addr  = 32'hxxxxxxxx;
-  assign \store_data$func$src/main/verilog/vscale_pipeline.v:392$411.data  = 32'hxxxxxxxx;
-  assign \store_data$func$src/main/verilog/vscale_pipeline.v:392$411.mem_type  = 3'hx;
+  assign \store_data$func$src/main/verilog/vscale_pipeline.v:394$411.addr  = 32'hxxxxxxxx;
+  assign \store_data$func$src/main/verilog/vscale_pipeline.v:394$411.data  = 32'hxxxxxxxx;
+  assign \store_data$func$src/main/verilog/vscale_pipeline.v:394$411.mem_type  = 3'hx;
 endmodule
 
 module vscale_regfile(clk, ra1, rd1, ra2, rd2, wen, wa, wd);
@@ -27471,6 +27475,7 @@ module vscale_sim_top(clk, reset, htif_pcr_req_valid, htif_pcr_req_ready, htif_p
   wire [31:0] mem_port_imem_hrdata;
   wire mem_port_imem_hready;
   wire mem_port_imem_hresp;
+  wire [2:0] \port_PC_src_sel[0] ;
   wire [31:0] port_dmem_haddr;
   wire [2:0] port_dmem_hburst;
   wire port_dmem_hmastlock;
@@ -27571,7 +27576,8 @@ module vscale_sim_top(clk, reset, htif_pcr_req_valid, htif_pcr_req_ready, htif_p
     .imem_hwrite(\imem_hwrite[0] ),
     .port_PC_DX(\ports_PC_DX[0] ),
     .port_PC_IF(\ports_PC_IF[0] ),
-    .port_PC_WB(\ports_PC_WB[0] )
+    .port_PC_WB(\ports_PC_WB[0] ),
+    .port_PC_src_sel(\port_PC_src_sel[0] )
   );
   vscale_dp_hasti_sram hasti_mem (
     .hclk(clk),
@@ -27630,7 +27636,7 @@ module vscale_sim_top(clk, reset, htif_pcr_req_valid, htif_pcr_req_ready, htif_p
   assign port_imem_hwdata = \imem_hwdata[0] ;
   assign port_imem_hwrite = \imem_hwrite[0] ;
 
-  `include "formal-alu.v"
+  `include "formal-alu-new1.v"
 endmodule
 
 module vscale_src_a_mux(src_a_sel, PC_DX, rs1_data, alu_src_a);

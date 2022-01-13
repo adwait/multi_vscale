@@ -10,4 +10,4 @@ prep -top vscale_sim_top
 
 [files]
 mvscale_top_c1_nonmem.v
-formal-alu.v
+formal-alu-new1.v
