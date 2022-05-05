@@ -46,7 +46,7 @@ int main(int argc, char **argv, char **env) {
     }
 
 
-    vector<bool> preseq = {0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
+    vector<bool> preseq = {0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0};
 
     srand(time(NULL));
     bool arbiter_token[NUM_CYCLES];

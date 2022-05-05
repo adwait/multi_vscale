@@ -14,8 +14,15 @@ module vscale_regfile(
     reg [`XPR_LEN-1:0]                             data [31:0];
     wire                                           wen_internal;
 
+    reg first_cycle;
+    initial begin
+        first_cycle = 1;
+    end
+    always @(posedge clk)
+        first_cycle <= 0;
+
     // fpga-style zero register
-    assign wen_internal = wen && |wa;
+    assign wen_internal = wen && |wa && !first_cycle;
 
     assign rd1 = |ra1 ? data[ra1] : 0;
     assign rd2 = |ra2 ? data[ra2] : 0;
